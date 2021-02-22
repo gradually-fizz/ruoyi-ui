@@ -3,17 +3,6 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:role:add']"
-          >新增</el-button
-        >
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
           type="success"
           plain
           icon="el-icon-edit"
@@ -26,14 +15,13 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="danger"
+          type="info"
           plain
-          icon="el-icon-delete"
+          icon="el-icon-upload2"
           size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['system:role:remove']"
-          >删除</el-button
+          @click="handleImport"
+          v-hasPermi="['system:user:import']"
+          >导入</el-button
         >
       </el-col>
       <el-col :span="1.5">
@@ -54,6 +42,8 @@
         <el-table
           v-loading="loading"
           :data="personList"
+          :span-method="objectSpanMethod"
+          border
           @selection-change="handleSelectionChange"
         >
           <el-table-column type="selection" width="55" align="center" />
@@ -62,15 +52,11 @@
           <el-table-column label="确认项目" prop="item" width="80" />
           <el-table-column
             label="未执行到位产生异常"
-            prop="exception"
+            prop="myexception"
             width="80"
           />
           <el-table-column label="已识别变化点">
-            <el-table-column
-              label="变化数量"
-              prop="recognizedNum"
-              width="80"
-            />
+            <el-table-column label="变化数量" prop="recognizedNum" width="80" />
             <el-table-column
               label="变化点内容"
               prop="recognizedItem"
@@ -78,64 +64,399 @@
             />
             <el-table-column label="责任人" prop="responsible" width="80" />
             <el-table-column label="确认结果" prop="result" width="80" />
-            <el-table-column label="计划确认时间" prop="time" width="80" />
+            <el-table-column label="计划确认时间" prop="acktime" width="80" />
           </el-table-column>
           <el-table-column label="突发变化点">
-            <el-table-column
-              label="变化数量"
-              prop="unexceptedNum"
-              width="80"
-            />
+            <el-table-column label="变化数量" prop="unexceptednum" width="80" />
             <el-table-column
               label="变化点内容"
-              prop="unexceptedItem"
+              prop="unexcepteditem"
               width="80"
             />
           </el-table-column>
-          <el-table-column label="创建追踪事项" prop="create" width="80" />
+          <el-table-column
+            label="创建追踪事项"
+            prop="creatematter"
+            width="80"
+          />
           <el-table-column label="早会总结" prop="summary" width="120" />
         </el-table>
       </el-tab-pane>
-      <el-tab-pane label="机" name="equipment">机</el-tab-pane>
-      <el-tab-pane label="料" name="material">料</el-tab-pane>
-      <el-tab-pane label="法" name="method">法</el-tab-pane>
-      <el-tab-pane label="环" name="enviroment">环</el-tab-pane>
+      <el-tab-pane label="机" name="equipment">
+        <el-table
+          v-loading="loading"
+          :data="equipmentList"
+          :span-method="objectSpanMethod"
+          border
+          @selection-change="handleSelectionChange"
+        >
+          <el-table-column type="selection" width="55" align="center" />
+          <el-table-column label="类别" prop="category" width="80" />
+          <el-table-column label="变化点内容" prop="items" width="80" />
+          <el-table-column label="确认项目" prop="item" width="80" />
+          <el-table-column
+            label="未执行到位产生异常"
+            prop="myexception"
+            width="80"
+          />
+          <el-table-column label="已识别变化点">
+            <el-table-column label="变化数量" prop="recognizedNum" width="80" />
+            <el-table-column
+              label="变化点内容"
+              prop="recognizedItem"
+              width="80"
+            />
+            <el-table-column label="责任人" prop="responsible" width="80" />
+            <el-table-column label="确认结果" prop="result" width="80" />
+            <el-table-column label="计划确认时间" prop="acktime" width="80" />
+          </el-table-column>
+          <el-table-column label="突发变化点">
+            <el-table-column label="变化数量" prop="unexceptednum" width="80" />
+            <el-table-column
+              label="变化点内容"
+              prop="unexcepteditem"
+              width="80"
+            />
+          </el-table-column>
+          <el-table-column
+            label="创建追踪事项"
+            prop="creatematter"
+            width="80"
+          />
+          <el-table-column label="早会总结" prop="summary" width="120" />
+        </el-table>
+      </el-tab-pane>
+      <el-tab-pane label="料" name="material">
+        <el-table
+          v-loading="loading"
+          :data="materialList"
+          :span-method="objectSpanMethod"
+          border
+          @selection-change="handleSelectionChange"
+        >
+          <el-table-column type="selection" width="55" align="center" />
+          <el-table-column label="类别" prop="category" width="80" />
+          <el-table-column label="变化点内容" prop="items" width="80" />
+          <el-table-column label="确认项目" prop="item" width="80" />
+          <el-table-column
+            label="未执行到位产生异常"
+            prop="myexception"
+            width="80"
+          />
+          <el-table-column label="已识别变化点">
+            <el-table-column label="变化数量" prop="recognizedNum" width="80" />
+            <el-table-column
+              label="变化点内容"
+              prop="recognizedItem"
+              width="80"
+            />
+            <el-table-column label="责任人" prop="responsible" width="80" />
+            <el-table-column label="确认结果" prop="result" width="80" />
+            <el-table-column label="计划确认时间" prop="acktime" width="80" />
+          </el-table-column>
+          <el-table-column label="突发变化点">
+            <el-table-column label="变化数量" prop="unexceptednum" width="80" />
+            <el-table-column
+              label="变化点内容"
+              prop="unexcepteditem"
+              width="80"
+            />
+          </el-table-column>
+          <el-table-column
+            label="创建追踪事项"
+            prop="creatematter"
+            width="80"
+          />
+          <el-table-column label="早会总结" prop="summary" width="120" />
+        </el-table>
+      </el-tab-pane>
+      <el-tab-pane label="法" name="method">
+        <el-table
+          v-loading="loading"
+          :data="methodList"
+          :span-method="objectSpanMethod"
+          border
+          @selection-change="handleSelectionChange"
+        >
+          <el-table-column type="selection" width="55" align="center" />
+          <el-table-column label="类别" prop="category" width="80" />
+          <el-table-column label="变化点内容" prop="items" width="80" />
+          <el-table-column label="确认项目" prop="item" width="80" />
+          <el-table-column
+            label="未执行到位产生异常"
+            prop="myexception"
+            width="80"
+          />
+          <el-table-column label="已识别变化点">
+            <el-table-column label="变化数量" prop="recognizedNum" width="80" />
+            <el-table-column
+              label="变化点内容"
+              prop="recognizedItem"
+              width="80"
+            />
+            <el-table-column label="责任人" prop="responsible" width="80" />
+            <el-table-column label="确认结果" prop="result" width="80" />
+            <el-table-column label="计划确认时间" prop="acktime" width="80" />
+          </el-table-column>
+          <el-table-column label="突发变化点">
+            <el-table-column label="变化数量" prop="unexceptednum" width="80" />
+            <el-table-column
+              label="变化点内容"
+              prop="unexcepteditem"
+              width="80"
+            />
+          </el-table-column>
+          <el-table-column
+            label="创建追踪事项"
+            prop="creatematter"
+            width="80"
+          />
+          <el-table-column label="早会总结" prop="summary" width="120" />
+        </el-table>
+      </el-tab-pane>
+      <el-tab-pane label="环" name="enviroment">
+        <el-table
+          v-loading="loading"
+          :data="environmentList"
+          :span-method="objectSpanMethod"
+          border
+          @selection-change="handleSelectionChange"
+        >
+          <el-table-column type="selection" width="55" align="center" />
+          <el-table-column label="类别" prop="category" width="80" />
+          <el-table-column label="变化点内容" prop="items" width="80" />
+          <el-table-column label="确认项目" prop="item" width="80" />
+          <el-table-column
+            label="未执行到位产生异常"
+            prop="myexception"
+            width="80"
+          />
+          <el-table-column label="已识别变化点">
+            <el-table-column label="变化数量" prop="recognizedNum" width="80" />
+            <el-table-column
+              label="变化点内容"
+              prop="recognizedItem"
+              width="80"
+            />
+            <el-table-column label="责任人" prop="responsible" width="80" />
+            <el-table-column label="确认结果" prop="result" width="80" />
+            <el-table-column label="计划确认时间" prop="acktime" width="80" />
+          </el-table-column>
+          <el-table-column label="突发变化点">
+            <el-table-column label="变化数量" prop="unexceptednum" width="80" />
+            <el-table-column
+              label="变化点内容"
+              prop="unexcepteditem"
+              width="80"
+            />
+          </el-table-column>
+          <el-table-column
+            label="创建追踪事项"
+            prop="creatematter"
+            width="80"
+          />
+          <el-table-column label="早会总结" prop="summary" width="120" />
+        </el-table>
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
 <script>
+import { getTemplateAll } from "@/api/manage/template";
+
 export default {
   data() {
     return {
       activeName: "person",
-      personList: [
-        {
-          category: "正常培训",
-          items: "新人上岗",
-          item:
-            "● 上岗资质\n" +
-            "● 作业流程及标准（型号作业顺序及要点）掌握\n" +
-            "● 对应岗位异常反馈标准及反馈方式明确\n" +
-            "● 分配老员工结组搭配作业\n" +
-            "● 上岗后的状态（作业观察表五大内容、产能）",
-          exception:
-            "若不遵守要求：\n" +
-            "☆则会由于异常不反馈、作业的失误、自作主张地作业，而导致工序遗漏、不良流出。",
-          recognizedNum: "",
-          recognizedItem: "",
-          responsible: "",
-          result: "",
-          time: "",
-          unexceptedNum: "",
-          summary: "",
-        },
-        {},
-      ],
+      currentgroup: "person",
+      OrderIndexObj: {},
+      flag: false,
+      list: [],
+      templist: [],
+      personList: [],
+      equipmentList: [],
+      materialList: [],
+      methodList: [],
+      enviromentList: [],
+      queryParams: {
+        pageNum: 1,
+        pageSize: 10,
+        mygrouping: null,
+        category: null,
+        items: null,
+        item: null,
+        myexception: null,
+        recognizednum: null,
+        recognizeditem: null,
+        responsible: null,
+        result: null,
+        acktime: null,
+        unexceptednum: null,
+        unexcepteditem: null,
+        creatematter: null,
+        summary: null,
+      },
+      templateList: [],
+      loading: true,
     };
   },
+  created() {
+    this.getList();
+  },
+  // mounted() {
+  //   this.getOrderNumber();
+  // },
+  watch: {
+    templateList: function (val) {
+      this.personList = this.templateList.filter(
+        (n) => n.mygrouping == "person"
+      );
+      this.equipmentList = this.templateList.filter(
+        (n) => n.mygrouping == "equipment"
+      );
+      this.materialList = this.templateList.filter(
+        (n) => n.mygrouping == "material"
+      );
+      this.methodList = this.templateList.filter(
+        (n) => n.mygrouping == "method"
+      );
+      this.environmentList = this.templateList.filter(
+        (n) => n.mygrouping == "environment"
+      );
+    },
+  },
   methods: {
+    getOrderNumber() {
+      this.OrderIndexObj = {};
+      let OrderObj = {};
+      this.templist =
+        this.currentgroup == "person"
+          ? this.personList
+          : this.currentgroup == "equipment"
+          ? this.equipmentList
+          : this.currentgroup == "material"
+          ? this.materialList
+          : this.currentgroup == "method"
+          ? this.methodList
+          : this.currentgroup == "environment"
+          ? this.environmentList
+          : null;
+      this.templist.forEach((element, index) => {
+        element.rowIndex = index;
+        if (OrderObj[element.category]) {
+          OrderObj[element.category].push(index);
+        } else {
+          OrderObj[element.category] = [];
+          OrderObj[element.category].push(index);
+        }
+      });
+
+      for (let k in OrderObj) {
+        this.OrderIndexObj[OrderObj[k][0]] = OrderObj[k].length;
+      }
+    },
+
+    // 合并单元格
+    objectSpanMethod({ row, column, rowIndex, columnIndex }) {
+      if (this.flag == false) {
+        this.getList();
+        this.flag = true;
+      }
+      if (columnIndex == 1) {
+        if (rowIndex in this.OrderIndexObj) {
+          return {
+            rowspan: this.OrderIndexObj[rowIndex],
+            colspan: 1,
+          };
+        } else {
+          return {
+            rowsapn: 0,
+            colspan: 0,
+          };
+        }
+      }
+      if (columnIndex == 13) {
+        if (rowIndex == 0) {
+          return {
+            rowspan: this.templist.length,
+            colspan: 1,
+          };
+        } else {
+          return {
+            rowspan: 0,
+            colspan: 0,
+          };
+        }
+      }
+    },
+
+    // tableRowClassName({ row, rowIndex }) {
+    //   let arr = this.hoverOrderArr;
+    //   for (let i = 0; i < arr.length; i++) {
+    //     if (rowIndex == arr[i]) {
+    //       return "hovered-row";
+    //     }
+    //   }
+    // },
+
+    // cellMouseEnter(row, column, cell, event) {
+    //   this.rowIndex = row.rowIndex;
+    //   this.hoverOrderArr = [];
+    //   this.OrderIndexArr.forEach((element) => {
+    //     if (element.indexOf(this.rowIndex) >= 0) {
+    //       this.hoverOrderArr = element;
+    //     }
+    //   });
+    // },
+
+    // cellMouseLeave(row, column, cell, event) {
+    //   this.rowIndex = "-1";
+    //   this.hoverOrderArr = [];
+    // },
+    getList() {
+      this.loading = true;
+      getTemplateAll().then((Response) => {
+        this.templateList = Response;
+        this.loading = false;
+      });
+      this.getOrderNumber();
+    },
     handleClick(tab, event) {
-      console.log(tab, event);
+      this.currentgroup = tab.paneName;
+      this.getList();
+    },
+    /** 修改按钮操作 */
+    handleUpdate(row) {
+      this.reset();
+      const userId = row.userId || this.ids;
+      getUser(userId).then((response) => {
+        this.form = response.data;
+        this.postOptions = response.posts;
+        this.roleOptions = response.roles;
+        this.form.postIds = response.postIds;
+        this.form.roleIds = response.roleIds;
+        this.open = true;
+        this.title = "修改用户";
+        this.form.password = "";
+      });
+    },
+    // 表单重置
+    reset() {
+      this.form = {
+        userId: undefined,
+        deptId: undefined,
+        userName: undefined,
+        nickName: undefined,
+        password: undefined,
+        phonenumber: undefined,
+        email: undefined,
+        sex: undefined,
+        status: "0",
+        remark: undefined,
+        postIds: [],
+        roleIds: [],
+      };
+      this.resetForm("form");
     },
   },
 };

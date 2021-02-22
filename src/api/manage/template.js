@@ -8,6 +8,13 @@ export function listTemplate(query) {
     params: query
   })
 }
+// 查询变化点模板列表
+export function getTemplateAll() {
+  return request({
+    url: '/manage/template/all',
+    method: 'get'
+  })
+}
 
 // 查询变化点模板详细
 export function getTemplate(group) {
