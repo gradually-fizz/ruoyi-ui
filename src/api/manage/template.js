@@ -58,3 +58,11 @@ export function exportTemplate(query) {
     params: query
   })
 }
+
+// 下载用户导入模板
+export function importTemplate() {
+  return request({
+    url: '/system/template/importTemplate',
+    method: 'get'
+  })
+}
