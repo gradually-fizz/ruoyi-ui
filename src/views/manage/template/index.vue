@@ -1,5 +1,50 @@
 <template>
   <div class="app-container">
+    <el-form
+      :model="queryParams"
+      ref="queryForm"
+      v-show="showSearch"
+      :inline="true"
+    >
+      <el-form-item label="线体" prop="line">
+        <el-input
+          v-model="queryParams.date"
+          placeholder="线体"
+          clearable
+          size="small"
+          style="width: 240px"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="区域" prop="area">
+        <el-input
+          v-model="queryParams.shift"
+          placeholder="区域"
+          clearable
+          size="small"
+          style="width: 240px"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item>
+        <el-button
+          type="primary"
+          icon="el-icon-search"
+          size="mini"
+          @click="handleQuery"
+          >搜索</el-button
+        >
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
+          >重置</el-button
+        >
+      </el-form-item>
+    </el-form>
+<el-row :gutter="10" class="mb8">
+      <right-toolbar
+        :showSearch.sync="showSearch"
+        @queryTable="getList"
+      ></right-toolbar>
+    </el-row>
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
@@ -348,6 +393,7 @@ import {
 export default {
   data() {
     return {
+      showSearch:true,
       activeName: "person",
       currentgroup: "person",
       OrderIndexObj: {},

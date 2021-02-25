@@ -6,9 +6,29 @@
       v-show="showSearch"
       :inline="true"
     >
-      <el-form-item label="日期" prop="date">
+      <el-form-item label="线体" prop="line">
         <el-input
           v-model="queryParams.date"
+          placeholder="线体"
+          clearable
+          size="small"
+          style="width: 240px"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="区域" prop="area">
+        <el-input
+          v-model="queryParams.shift"
+          placeholder="区域"
+          clearable
+          size="small"
+          style="width: 240px"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="日期" prop="date">
+        <el-input
+          v-model="queryParams.line"
           placeholder="日期"
           clearable
           size="small"
@@ -16,20 +36,10 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="早晚班" prop="shift">
-        <el-input
-          v-model="queryParams.shift"
-          placeholder="早晚班"
-          clearable
-          size="small"
-          style="width: 240px"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="线体" prop="line">
+      <el-form-item label="班别" prop="shift">
         <el-input
           v-model="queryParams.line"
-          placeholder="线体"
+          placeholder="班别"
           clearable
           size="small"
           style="width: 240px"
@@ -70,23 +80,23 @@
           <el-table-column label="确认项目" prop="item" width="120" />
           <el-table-column
             label="未执行到位产生异常"
-            prop="exception"
+            prop="myexception"
             width="120"
           />
           <el-table-column label="已识别变化点">
             <el-table-column
               label="变化数量"
-              prop="recognizedNum"
+              prop="recognizednum"
               width="120"
             />
             <el-table-column
               label="变化点内容"
-              prop="recognizedItem"
+              prop="recognizeditem"
               width="120"
             />
             <el-table-column label="责任人" prop="responsible" width="120" />
             <el-table-column label="确认结果" prop="result" width="120" />
-            <el-table-column label="计划确认时间" prop="time" width="120" />
+            <el-table-column label="计划确认时间" prop="acktime" width="120" />
           </el-table-column>
           <el-table-column label="突发变化点">
             <el-table-column
@@ -100,7 +110,13 @@
               width="120"
             />
           </el-table-column>
-          <el-table-column label="创建追踪事项" prop="create" width="120" />
+          <el-table-column label="状态" prop="state" width="120" />
+          <el-table-column label="转办人" prop="transferor" width="120" />
+          <el-table-column
+            label="被转办人"
+            prop="transferredperson"
+            width="120"
+          />
           <el-table-column label="早会总结" prop="summary" width="120" />
         </el-table>
       </el-tab-pane>
@@ -126,20 +142,13 @@ export default {
         {
           category: "正常培训",
           items: "新人上岗",
-          item:
-            "● 上岗资质\n" +
-            "● 作业流程及标准（型号作业顺序及要点）掌握\n" +
-            "● 对应岗位异常反馈标准及反馈方式明确\n" +
-            "● 分配老员工结组搭配作业\n" +
-            "● 上岗后的状态（作业观察表五大内容、产能）",
-          exception:
-            "若不遵守要求：\n" +
-            "☆则会由于异常不反馈、作业的失误、自作主张地作业，而导致工序遗漏、不良流出。",
-          recognizedNum: "",
-          recognizedItem: "",
+          item: "● 上岗资质\n",
+          myexception: "若不遵守要求：\n",
+          recognizednum: "",
+          recognizeditem: "",
           responsible: "",
           result: "",
-          time: "",
+          acktime: "",
           unexceptedNum: "",
           summary: "",
         },
