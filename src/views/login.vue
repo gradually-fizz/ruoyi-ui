@@ -48,7 +48,7 @@
     </el-form>
     <!--  底部  -->
     <div class="el-login-footer">
-      <span>Copyright © 2018-2021 ruoyi.vip All Rights Reserved.</span>
+      <span>Copyright © 上海天马G4.5产业基地CIM部</span>
     </div>
   </div>
 </template>
@@ -85,7 +85,7 @@ export default {
     };
   },
   watch: {
-    $route: {
+    $route: { // $route 局部路由对象，参考：https://www.cnblogs.com/czy960731/p/9288830.html
       handler: function(route) {
         this.redirect = route.query && route.query.redirect;
       },
@@ -127,7 +127,7 @@ export default {
             Cookies.remove('rememberMe');
           }
           this.$store.dispatch("Login", this.loginForm).then(() => {
-            this.$router.push({ path: this.redirect || "/" }).catch(()=>{});
+            this.$router.push({ path: this.redirect || "/" }).catch(()=>{}); // 切换路由，本质是向history栈中添加一个路由，即在添加一个history记录
           }).catch(() => {
             this.loading = false;
             this.getCode();
