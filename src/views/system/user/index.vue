@@ -1,5 +1,6 @@
 <template>
   <div class="app-container">
+    
     <el-row :gutter="20">
       <!--部门数据-->
       <el-col :span="4" :xs="24">
@@ -348,12 +349,12 @@ import { getToken } from "@/utils/auth";
 import { treeselect } from "@/api/system/dept";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
-
 export default {
   name: "User",
   components: { Treeselect },
   data() {
-    return {
+  
+      return {
       // 遮罩层
       loading: true,
       // 选中数组
