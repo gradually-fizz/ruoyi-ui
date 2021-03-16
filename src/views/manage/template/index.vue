@@ -6,27 +6,23 @@
       v-show="showSearch"
       :inline="true"
     >
-      <el-form-item label="线体" prop="line">
-        <el-input
-          v-model="queryParams.date"
-          placeholder="线体"
-          clearable
-          size="small"
-          style="width: 240px"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="区域" prop="area">
-        <el-input
-          v-model="queryParams.shift"
-          placeholder="区域"
-          clearable
-          size="small"
-          style="width: 240px"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item>
+      <el-form-item label="区域" prop="areaid">
+            <el-select
+              v-model="queryParams.areaid"
+              placeholder="区域"
+              clearable
+              size="small"
+              style="width: 240px"
+            >
+              <el-option
+                v-for="area in areas"
+                :key="area.dictValue"
+                :label="area.dictLabel"
+                :value="area.dictValue"
+              />
+            </el-select>
+          </el-form-item>
+    <el-form-item>
         <el-button
           type="primary"
           icon="el-icon-search"
@@ -39,7 +35,7 @@
         >
       </el-form-item>
     </el-form>
-<el-row :gutter="10" class="mb8">
+    <el-row :gutter="10" class="mb8">
       <right-toolbar
         :showSearch.sync="showSearch"
         @queryTable="getList"
@@ -56,6 +52,18 @@
           @click="handleUpdate"
           v-hasPermi="['system:role:edit']"
           >修改</el-button
+        >
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="success"
+          plain
+          icon="el-icon-edit"
+          size="mini"
+          :disabled="single"
+          @click="handleUpdate"
+          v-hasPermi="['system:role:edit']"
+          >新增</el-button
         >
       </el-col>
       <el-col :span="1.5">
@@ -83,95 +91,49 @@
     </el-row>
 
     <el-tabs v-model="activeName" @tab-click="handleClick" type="border-card">
-      <el-tab-pane label="人" name="person">
+      <el-tab-pane label="人" name="man">
         <el-table
           v-loading="loading"
-          :data="personList"
+          :data="manList"
           :span-method="objectSpanMethod"
           border
           @selection-change="handleSelectionChange"
         >
           <el-table-column type="selection" width="55" align="center" />
           <el-table-column label="类别" prop="category" width="80" />
-          <el-table-column label="变化点内容" prop="items" width="80" />
-          <el-table-column label="确认项目" prop="item" width="80" />
+          <el-table-column label="变化点内容" prop="subcategory" width="80" />
+          <el-table-column label="确认项目" prop="content" width="80" />
           <el-table-column
             label="未执行到位产生异常"
-            prop="myexception"
+            prop="exceptioncontent"
             width="80"
           />
-          <el-table-column label="已识别变化点">
-            <el-table-column label="变化数量" prop="recognizedNum" width="80" />
-            <el-table-column
-              label="变化点内容"
-              prop="recognizedItem"
-              width="80"
-            />
-            <el-table-column label="责任人" prop="responsible" width="80" />
-            <el-table-column label="确认结果" prop="result" width="80" />
-            <el-table-column label="计划确认时间" prop="acktime" width="80" />
-          </el-table-column>
-          <el-table-column label="突发变化点">
-            <el-table-column label="变化数量" prop="unexceptednum" width="80" />
-            <el-table-column
-              label="变化点内容"
-              prop="unexcepteditem"
-              width="80"
-            />
-          </el-table-column>
-          <el-table-column
-            label="创建追踪事项"
-            prop="creatematter"
-            width="80"
-          />
-          <el-table-column label="早会总结" prop="summary" width="120" />
         </el-table>
       </el-tab-pane>
-      <el-tab-pane label="机" name="equipment">
+      <el-tab-pane label="机" name="machine">
         <el-table
           v-loading="loading"
-          :data="equipmentList"
+          :data="machineList"
           :span-method="objectSpanMethod"
           border
           @selection-change="handleSelectionChange"
         >
           <el-table-column type="selection" width="55" align="center" />
           <el-table-column label="类别" prop="category" width="80" />
-          <el-table-column label="变化点内容" prop="items" width="80" />
-          <el-table-column label="确认项目" prop="item" width="80" />
+          <el-table-column label="变化点内容" prop="subcategory" width="80" />
+          <el-table-column label="确认项目" prop="content" width="80" />
           <el-table-column
             label="未执行到位产生异常"
-            prop="myexception"
+            prop="exceptioncontent"
             width="80"
           />
-          <el-table-column label="已识别变化点">
-            <el-table-column label="变化数量" prop="recognizedNum" width="80" />
-            <el-table-column
-              label="变化点内容"
-              prop="recognizedItem"
-              width="80"
-            />
-            <el-table-column label="责任人" prop="responsible" width="80" />
-            <el-table-column label="确认结果" prop="result" width="80" />
-            <el-table-column label="计划确认时间" prop="acktime" width="80" />
-          </el-table-column>
-          <el-table-column label="突发变化点">
-            <el-table-column label="变化数量" prop="unexceptednum" width="80" />
-            <el-table-column
-              label="变化点内容"
-              prop="unexcepteditem"
-              width="80"
-            />
-          </el-table-column>
-          <el-table-column
-            label="创建追踪事项"
-            prop="creatematter"
-            width="80"
-          />
-          <el-table-column label="早会总结" prop="summary" width="120" />
         </el-table>
+         <!-- <grouptemplate :loading="loading" :list="machineList" 
+         :objectSpanMethod="objectSpanMethod" :handleSelectionChange="handleSelectionChange"
+         /> -->
       </el-tab-pane>
       <el-tab-pane label="料" name="material">
+        <!-- <grouptemplate :list="materialList" :objectSpanMethod="objectSpanMethod"/> -->
         <el-table
           v-loading="loading"
           :data="materialList"
@@ -181,41 +143,17 @@
         >
           <el-table-column type="selection" width="55" align="center" />
           <el-table-column label="类别" prop="category" width="80" />
-          <el-table-column label="变化点内容" prop="items" width="80" />
-          <el-table-column label="确认项目" prop="item" width="80" />
+          <el-table-column label="变化点内容" prop="subcategory" width="80" />
+          <el-table-column label="确认项目" prop="content" width="80" />
           <el-table-column
             label="未执行到位产生异常"
-            prop="myexception"
+            prop="exceptioncontent"
             width="80"
           />
-          <el-table-column label="已识别变化点">
-            <el-table-column label="变化数量" prop="recognizedNum" width="80" />
-            <el-table-column
-              label="变化点内容"
-              prop="recognizedItem"
-              width="80"
-            />
-            <el-table-column label="责任人" prop="responsible" width="80" />
-            <el-table-column label="确认结果" prop="result" width="80" />
-            <el-table-column label="计划确认时间" prop="acktime" width="80" />
-          </el-table-column>
-          <el-table-column label="突发变化点">
-            <el-table-column label="变化数量" prop="unexceptednum" width="80" />
-            <el-table-column
-              label="变化点内容"
-              prop="unexcepteditem"
-              width="80"
-            />
-          </el-table-column>
-          <el-table-column
-            label="创建追踪事项"
-            prop="creatematter"
-            width="80"
-          />
-          <el-table-column label="早会总结" prop="summary" width="120" />
         </el-table>
       </el-tab-pane>
       <el-tab-pane label="法" name="method">
+        <!-- <grouptemplate :list="methodList" :objectSpanMethod="objectSpanMethod"/> -->
         <el-table
           v-loading="loading"
           :data="methodList"
@@ -225,82 +163,53 @@
         >
           <el-table-column type="selection" width="55" align="center" />
           <el-table-column label="类别" prop="category" width="80" />
-          <el-table-column label="变化点内容" prop="items" width="80" />
-          <el-table-column label="确认项目" prop="item" width="80" />
+          <el-table-column label="变化点内容" prop="subcategory" width="80" />
+          <el-table-column label="确认项目" prop="content" width="80" />
           <el-table-column
             label="未执行到位产生异常"
-            prop="myexception"
+            prop="exceptioncontent"
             width="80"
           />
-          <el-table-column label="已识别变化点">
-            <el-table-column label="变化数量" prop="recognizedNum" width="80" />
-            <el-table-column
-              label="变化点内容"
-              prop="recognizedItem"
-              width="80"
-            />
-            <el-table-column label="责任人" prop="responsible" width="80" />
-            <el-table-column label="确认结果" prop="result" width="80" />
-            <el-table-column label="计划确认时间" prop="acktime" width="80" />
-          </el-table-column>
-          <el-table-column label="突发变化点">
-            <el-table-column label="变化数量" prop="unexceptednum" width="80" />
-            <el-table-column
-              label="变化点内容"
-              prop="unexcepteditem"
-              width="80"
-            />
-          </el-table-column>
-          <el-table-column
-            label="创建追踪事项"
-            prop="creatematter"
-            width="80"
-          />
-          <el-table-column label="早会总结" prop="summary" width="120" />
         </el-table>
       </el-tab-pane>
       <el-tab-pane label="环" name="enviroment">
+        <!-- <grouptemplate :list="enviromentList" :objectSpanMethod="objectSpanMethod"/> -->
         <el-table
           v-loading="loading"
-          :data="environmentList"
+          :data="enviromentList"
           :span-method="objectSpanMethod"
           border
           @selection-change="handleSelectionChange"
         >
           <el-table-column type="selection" width="55" align="center" />
           <el-table-column label="类别" prop="category" width="80" />
-          <el-table-column label="变化点内容" prop="items" width="80" />
-          <el-table-column label="确认项目" prop="item" width="80" />
+          <el-table-column label="变化点内容" prop="subcategory" width="80" />
+          <el-table-column label="确认项目" prop="content" width="80" />
           <el-table-column
             label="未执行到位产生异常"
-            prop="myexception"
+            prop="exceptioncontent"
             width="80"
           />
-          <el-table-column label="已识别变化点">
-            <el-table-column label="变化数量" prop="recognizedNum" width="80" />
-            <el-table-column
-              label="变化点内容"
-              prop="recognizedItem"
-              width="80"
-            />
-            <el-table-column label="责任人" prop="responsible" width="80" />
-            <el-table-column label="确认结果" prop="result" width="80" />
-            <el-table-column label="计划确认时间" prop="acktime" width="80" />
-          </el-table-column>
-          <el-table-column label="突发变化点">
-            <el-table-column label="变化数量" prop="unexceptednum" width="80" />
-            <el-table-column
-              label="变化点内容"
-              prop="unexcepteditem"
-              width="80"
-            />
-          </el-table-column>
+        </el-table>
+      </el-tab-pane>
+      <el-tab-pane label="测" name="measure">
+        <!-- <grouptemplate :list="measureList" :objectSpanMethod="objectSpanMethod"/> -->
+        <el-table
+          v-loading="loading"
+          :data="measureList"
+          :span-method="objectSpanMethod"
+          border
+          @selection-change="handleSelectionChange"
+        >
+          <el-table-column type="selection" width="55" align="center" />
+          <el-table-column label="类别" prop="category" width="80" />
+          <el-table-column label="变化点内容" prop="subcategory" width="80" />
+          <el-table-column label="确认项目" prop="content" width="80" />
           <el-table-column
-            label="创建追踪事项"
-            prop="creatematter"
+            label="未执行到位产生异常"
+            prop="exceptioncontent"
             width="80"
           />
-          <el-table-column label="早会总结" prop="summary" width="120" />
         </el-table>
       </el-tab-pane>
     </el-tabs>
@@ -310,8 +219,8 @@
       <el-form ref="form" :model="form" label-width="80px">
         <el-row>
           <el-col :span="12">
-            <el-form-item label="5M1E" prop="mygrouping">
-              <el-input v-model="form.mygrouping" />
+            <el-form-item label="5M1E" prop="categorygroup">
+              <el-input v-model="form.categorygroup" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -322,19 +231,19 @@
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-form-item label="变化点内容" prop="items">
-              <el-input v-model="form.items" type="textarea" />
+            <el-form-item label="变化点内容" prop="subcategory">
+              <el-input v-model="form.subcategory" type="textarea" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :span="24">
-          <el-form-item label="确认项目" prop="item">
-            <el-input v-model="form.item" type="textarea" />
+          <el-form-item label="确认项目" prop="content">
+            <el-input v-model="form.content" type="textarea" />
           </el-form-item>
         </el-row>
         <el-row :span="24">
-          <el-form-item label="未执行到位产生异常" prop="myexception">
-            <el-input v-model="form.myexception" type="textarea" />
+          <el-form-item label="未执行到位产生异常" prop="exceptioncontent">
+            <el-input v-model="form.exceptioncontent" type="textarea" />
           </el-form-item>
         </el-row>
       </el-form>
@@ -389,13 +298,15 @@ import {
   updateTemplate,
   importTemplate,
 } from "@/api/manage/template";
+import grouptemplate from "./components/grouptemplate.vue";
 
 export default {
+  components: { grouptemplate },
   data() {
     return {
-      showSearch:true,
-      activeName: "person",
-      currentgroup: "person",
+      showSearch: true,
+      activeName: "man",
+      currentgroup: "man",
       OrderIndexObj: {},
       flag: false,
       open: false,
@@ -407,32 +318,23 @@ export default {
       title: "",
       list: [],
       categoryArr: [],
-      itemsArr: [],
-      itemArr: [],
-      myexceptionArr: [],
+      subcategoryArr: [],
+      contentArr: [],
+      exceptioncontentArr: [],
       templist: [],
-      personList: [],
-      equipmentList: [],
+      manList: [],
+      machineList: [],
       materialList: [],
       methodList: [],
       enviromentList: [],
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        mygrouping: null,
+        categorygroup: null,
         category: null,
-        items: null,
-        item: null,
-        myexception: null,
-        recognizednum: null,
-        recognizeditem: null,
-        responsible: null,
-        result: null,
-        acktime: null,
-        unexceptednum: null,
-        unexcepteditem: null,
-        creatematter: null,
-        summary: null,
+        subcategory: null,
+        content: null,
+        exceptioncontent: null,
       },
       // upload: {
       //   open: false,
@@ -447,11 +349,11 @@ export default {
       //   url: process.env.VUE_APP_BASE_API + "/system/user/importData",
       // },
       form: {
-        mygrouping: "",
+        categorygroup: "",
         category: "",
-        items: "",
-        item: "",
-        myexception: "",
+        subcategory: "",
+        content: "",
+        exceptioncontent: "",
       },
       templateList: [],
       loading: true,
@@ -465,20 +367,23 @@ export default {
   // },
   watch: {
     templateList: function (val) {
-      this.personList = this.templateList.filter(
-        (n) => n.mygrouping == "person"
+      this.manList = this.templateList.filter(
+        (n) => n.categorygroup == "man"
       );
-      this.equipmentList = this.templateList.filter(
-        (n) => n.mygrouping == "equipment"
+      this.machineList = this.templateList.filter(
+        (n) => n.categorygroup == "machine"
       );
       this.materialList = this.templateList.filter(
-        (n) => n.mygrouping == "material"
+        (n) => n.categorygroup == "material"
       );
       this.methodList = this.templateList.filter(
-        (n) => n.mygrouping == "method"
+        (n) => n.categorygroup == "method"
       );
       this.environmentList = this.templateList.filter(
-        (n) => n.mygrouping == "environment"
+        (n) => n.categorygroup == "environment"
+      );
+      this.measureList = this.templateList.filter(
+        (n) => n.categorygroup == "measure"
       );
     },
   },
@@ -487,16 +392,18 @@ export default {
       this.OrderIndexObj = {};
       let OrderObj = {};
       this.templist =
-        this.currentgroup == "person"
-          ? this.personList
-          : this.currentgroup == "equipment"
-          ? this.equipmentList
+        this.currentgroup == "man"
+          ? this.manList
+          : this.currentgroup == "machine"
+          ? this.machineList
           : this.currentgroup == "material"
           ? this.materialList
           : this.currentgroup == "method"
           ? this.methodList
           : this.currentgroup == "environment"
           ? this.environmentList
+          : this.currentgroup == "measure"
+          ? this.measureList
           : null;
       this.templist.forEach((element, index) => {
         element.rowIndex = index;
@@ -532,19 +439,7 @@ export default {
           };
         }
       }
-      if (columnIndex == 13) {
-        if (rowIndex == 0) {
-          return {
-            rowspan: this.templist.length,
-            colspan: 1,
-          };
-        } else {
-          return {
-            rowspan: 0,
-            colspan: 0,
-          };
-        }
-      }
+      
     },
 
     // tableRowClassName({ row, rowIndex }) {
@@ -572,10 +467,58 @@ export default {
     // },
     getList() {
       this.loading = true;
-      getTemplateAll().then((Response) => {
-        this.templateList = Response;
-        this.loading = false;
-      });
+
+      // getTemplateAll().then((Response) => {
+      //   this.templateList = Response;
+      //   this.loading = false;
+      // });
+      this.templateList = [
+        {
+          categorygroup:"man",
+          category:"1",
+          subcategory:"2",
+          content:"3",
+          exceptioncontent:"4",
+        },{
+          categorygroup:"man",
+          category:"1",
+          subcategory:"2",
+          content:"3",
+          exceptioncontent:"4",
+        },{
+          categorygroup:"man",
+          category:"2",
+          subcategory:"2",
+          content:"3",
+          exceptioncontent:"4",
+        },{
+          categorygroup:"machine",
+          category:"2",
+          subcategory:"2",
+          content:"3",
+          exceptioncontent:"4",
+        },{
+          categorygroup:"machine",
+          category:"2",
+          subcategory:"2",
+          content:"3",
+          exceptioncontent:"4",
+        },{
+          categorygroup:"machine",
+          category:"2",
+          subcategory:"2",
+          content:"3",
+          exceptioncontent:"4",
+        },{
+          categorygroup:"machine",
+          category:"3",
+          subcategory:"2",
+          content:"3",
+          exceptioncontent:"4",
+        }
+      ],
+      this.loading = false;
+
       this.getOrderNumber();
     },
     handleClick(tab, event) {
@@ -585,11 +528,11 @@ export default {
     /** 修改按钮操作 */
     handleUpdate() {
       this.title = "修改模板";
-      this.form.mygrouping = this.currentgroup;
+      this.form.categorygroup = this.currentgroup;
       this.form.category = this.categoryArr[0];
-      this.form.items = this.itemsArr[0];
-      this.form.item = this.itemArr[0];
-      this.form.myexception = this.myexceptionArr[0];
+      this.form.subcategory = this.subcategoryArr[0];
+      this.form.content = this.contentArr[0];
+      this.form.exceptioncontent = this.exceptioncontentArr[0];
       this.open = true;
     },
 
@@ -628,9 +571,9 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.categoryArr = selection.map((item) => item.category);
-      this.itemsArr = selection.map((item) => item.items);
-      this.itemArr = selection.map((item) => item.item);
-      this.myexceptionArr = selection.map((item) => item.myexception);
+      this.subcategoryArr = selection.map((item) => item.subcategory);
+      this.contentArr = selection.map((item) => item.content);
+      this.exceptioncontentArr = selection.map((item) => item.exceptioncontent);
       this.single = selection.length != 1;
       this.multiple = !selection.length;
     },
