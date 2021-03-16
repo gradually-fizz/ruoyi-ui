@@ -11,6 +11,14 @@
           :span-method="objectSpanMethod"
           border
         >
+        
+          <el-table-column
+            label="分组"
+            prop="categorygroup"
+            width="80"
+            align="center"
+          />
+          
           <el-table-column
             label="类别"
             prop="category"
@@ -29,6 +37,57 @@
             width="80"
             align="center"
           />
+          <el-table-column
+            label="未执行到位产生异常"
+            prop="unexcepteditem"
+            width="80"
+            align="center"
+          />
+          
+          <el-table-column
+            label="变化数量"
+            prop="recognizednum"
+            width="80"
+            align="center"
+          />
+          
+          <el-table-column
+            label="变化点内容"
+            prop="recognizeditem"
+            width="80"
+            align="center"
+          />
+          <el-table-column
+            label="责任人"
+            prop="reponsibe"
+            width="80"
+            align="center"
+          />
+          <el-table-column
+            label="确认结果"
+            prop="result"
+            width="80"
+            align="center"
+          />
+          <el-table-column
+            label="计划确认时间"
+            prop="duedate"
+            width="80"
+            align="center"
+          />
+          <el-table-column
+            label="突发数量"
+            prop="unexceptednum"
+            width="80"
+            align="center"
+          />
+          <el-table-column
+            label="突发内容"
+            prop="unexcepteditem"
+            width="80"
+            align="center"
+          />
+ 
         </el-table>
         <pagination
           v-show="total>0"
