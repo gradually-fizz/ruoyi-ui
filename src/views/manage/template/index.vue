@@ -6,6 +6,7 @@
       v-show="showSearch"
       :inline="true"
     >
+    <el-form-item>
       <el-form-item label="区域" prop="areaid">
             <el-select
               v-model="queryParams.areaid"
@@ -15,14 +16,13 @@
               style="width: 240px"
             >
               <el-option
-                v-for="area in areas"
-                :key="area.dictValue"
-                :label="area.dictLabel"
-                :value="area.dictValue"
+                v-for="dict in areas"
+                :key="dict.dictValue"
+                :label="dict.dictLabel"
+                :value="dict.dictValue"
               />
             </el-select>
           </el-form-item>
-    <el-form-item>
         <el-button
           type="primary"
           icon="el-icon-search"
@@ -298,6 +298,7 @@ import {
   updateTemplate,
   importTemplate,
 } from "@/api/manage/template";
+import { listAreaID } from "@/api/manage/common";
 import grouptemplate from "./components/grouptemplate.vue";
 
 export default {
@@ -316,6 +317,7 @@ export default {
       multiple: true,
       // 弹出层标题
       title: "",
+      areas:[],
       list: [],
       categoryArr: [],
       subcategoryArr: [],
@@ -330,11 +332,7 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        categorygroup: null,
-        category: null,
-        subcategory: null,
-        content: null,
-        exceptioncontent: null,
+        areaid:'',
       },
       // upload: {
       //   open: false,
@@ -361,10 +359,12 @@ export default {
   },
   created() {
     this.getList();
+    this.getDicts("mng_common_areas").then(response => {
+      this.areas = response.data;
+    });
   },
-  // mounted() {
-  //   this.getOrderNumber();
-  // },
+  mounted() {
+  },
   watch: {
     templateList: function (val) {
       this.manList = this.templateList.filter(
@@ -467,58 +467,57 @@ export default {
     // },
     getList() {
       this.loading = true;
-
-      // getTemplateAll().then((Response) => {
-      //   this.templateList = Response;
-      //   this.loading = false;
-      // });
-      this.templateList = [
-        {
-          categorygroup:"man",
-          category:"1",
-          subcategory:"2",
-          content:"3",
-          exceptioncontent:"4",
-        },{
-          categorygroup:"man",
-          category:"1",
-          subcategory:"2",
-          content:"3",
-          exceptioncontent:"4",
-        },{
-          categorygroup:"man",
-          category:"2",
-          subcategory:"2",
-          content:"3",
-          exceptioncontent:"4",
-        },{
-          categorygroup:"machine",
-          category:"2",
-          subcategory:"2",
-          content:"3",
-          exceptioncontent:"4",
-        },{
-          categorygroup:"machine",
-          category:"2",
-          subcategory:"2",
-          content:"3",
-          exceptioncontent:"4",
-        },{
-          categorygroup:"machine",
-          category:"2",
-          subcategory:"2",
-          content:"3",
-          exceptioncontent:"4",
-        },{
-          categorygroup:"machine",
-          category:"3",
-          subcategory:"2",
-          content:"3",
-          exceptioncontent:"4",
-        }
-      ],
-      this.loading = false;
-
+      listTemplate(this.queryParams).then(response => {
+        this.templateList = response.rows;
+        this.total = response.total;
+        this.loading = false;
+      });
+      // this.templateList = [
+      //   {
+      //     categorygroup:"man",
+      //     category:"1",
+      //     subcategory:"2",
+      //     content:"3",
+      //     exceptioncontent:"4",
+      //   },{
+      //     categorygroup:"man",
+      //     category:"1",
+      //     subcategory:"2",
+      //     content:"3",
+      //     exceptioncontent:"4",
+      //   },{
+      //     categorygroup:"man",
+      //     category:"2",
+      //     subcategory:"2",
+      //     content:"3",
+      //     exceptioncontent:"4",
+      //   },{
+      //     categorygroup:"machine",
+      //     category:"2",
+      //     subcategory:"2",
+      //     content:"3",
+      //     exceptioncontent:"4",
+      //   },{
+      //     categorygroup:"machine",
+      //     category:"2",
+      //     subcategory:"2",
+      //     content:"3",
+      //     exceptioncontent:"4",
+      //   },{
+      //     categorygroup:"machine",
+      //     category:"2",
+      //     subcategory:"2",
+      //     content:"3",
+      //     exceptioncontent:"4",
+      //   },{
+      //     categorygroup:"machine",
+      //     category:"3",
+      //     subcategory:"2",
+      //     content:"3",
+      //     exceptioncontent:"4",
+      //   }
+      // ],
+      // this.loading = false;
       this.getOrderNumber();
     },
     handleClick(tab, event) {

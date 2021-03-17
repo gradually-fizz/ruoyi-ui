@@ -36,7 +36,7 @@ export function addTemplate(data) {
 // 修改变化点模板
 export function updateTemplate(data) {
   return request({
-    url: '/manage/template',
+    url: '/manage/template/update',
     method: 'put',
     data: data
   })
