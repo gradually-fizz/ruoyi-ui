@@ -6,45 +6,41 @@
       v-show="showSearch"
       :inline="true"
     >
-      <el-form-item label="线体" prop="line">
-        <el-input
-          v-model="queryParams.date"
-          placeholder="线体"
+      <el-form-item label="区域" prop="areaid">
+        <el-select
+          v-model="queryParams.areaid"
+          placeholder="选择区域"
           clearable
           size="small"
           style="width: 240px"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="区域" prop="area">
-        <el-input
-          v-model="queryParams.shift"
-          placeholder="区域"
-          clearable
-          size="small"
-          style="width: 240px"
-          @keyup.enter.native="handleQuery"
-        />
+        >
+          <el-option
+            v-for="dict in areas"
+            :key="dict.dictValue"
+            :label="dict.dictLabel"
+            :value="dict.dictValue"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="日期" prop="date">
-        <el-input
-          v-model="queryParams.shift"
-          placeholder="日期"
-          clearable
-          size="small"
-          style="width: 240px"
-          @keyup.enter.native="handleQuery"
-        />
+        <el-date-picker v-model="queryParams.date" type="date" placeholder="选择日期">
+        </el-date-picker>
       </el-form-item>
-      <el-form-item label="班别" prop="shift">
-        <el-input
-          v-model="queryParams.shift"
-          placeholder="班别"
+      <el-form-item label="班别" prop="shifts">
+        <el-select
+          v-model="queryParams.shifts"
+          placeholder="选择班别"
           clearable
           size="small"
           style="width: 240px"
-          @keyup.enter.native="handleQuery"
-        />
+        >
+          <el-option
+            v-for="dict in shiftslist"
+            :key="dict.dictValue"
+            :label="dict.dictLabel"
+            :value="dict.dictValue"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button
@@ -57,12 +53,9 @@
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
           >重置</el-button
         >
-        <el-button icon="el-icon-document-add" size="mini" @click="resetQuery" type="warning"
-          >新增</el-button
-        >
       </el-form-item>
     </el-form>
-<el-row :gutter="10" class="mb8">
+    <el-row :gutter="10" class="mb8">
       <right-toolbar
         :showSearch.sync="showSearch"
         @queryTable="getList"
@@ -77,119 +70,207 @@
           size="mini"
           @click="handleUpdate"
           v-hasPermi="['system:role:edit']"
-          >一键分配</el-button
+          >保存</el-button
         >
       </el-col>
-      
     </el-row>
 
     <el-tabs v-model="activeName" @tab-click="handleClick" type="border-card">
-      <el-tab-pane label="人" name="person">
+      <el-tab-pane label="人" name="man">
         <el-table
           v-loading="loading"
-          :data="personList"
+          :data="manList"
           :span-method="objectSpanMethod"
           border
           @selection-change="handleSelectionChange"
         >
           <el-table-column type="selection" width="55" align="center" />
-          <el-table-column label="类别" prop="category" width="80" align="center" />
-          <el-table-column label="变化点内容" prop="items" width="80" align="center" />
-          <el-table-column label="确认项目" prop="item" width="80" align="center" />
+          <el-table-column
+            label="类别"
+            prop="category"
+            width="80"
+            align="center"
+          />
+          <el-table-column
+            label="变化点内容"
+            prop="subcategory"
+            width="80"
+            align="center"
+          />
+          <el-table-column
+            label="确认项目"
+            prop="content"
+            width="80"
+            align="center"
+          />
           <el-table-column
             label="未执行到位产生异常"
-            prop="myexception"
-            width="80" align="center"
+            prop="exceptioncontent"
+            width="80"
+            align="center"
           />
-          <el-table-column label="突发变化点"  align="center" >
-            <el-table-column label="变化数量" prop="recognizedNum" width="80" align="center" />
+          <el-table-column label="突发变化点" align="center">
             <el-table-column
-              label="变化点内容"
-              prop="recognizedItem"
-              width="80" align="center"
+              label="变化数量"
+              prop="unexceptednum"
+              width="80"
+              align="center"
             />
-            <el-table-column label="责任人" prop="responsible" width="80" align="center" />
-            <el-table-column label="确认结果" prop="result" width="80" align="center" />
-            <el-table-column label="计划确认时间" prop="acktime" width="80" align="center" />
-          </el-table-column>
-          <el-table-column label="突发变化点"  align="center">
-            <el-table-column label="变化数量" prop="unexceptednum" width="80" align="center" />
             <el-table-column
               label="变化点内容"
               prop="unexcepteditem"
-              width="80" align="center"
+              width="80"
+              align="center"
+            />
+            <el-table-column
+              label="责任人"
+              prop="assigneduserid"
+              width="80"
+              align="center"
+            />
+            <el-table-column
+              label="确认结果"
+              prop="result"
+              width="80"
+              align="center"
+            />
+            <el-table-column
+              label="计划确认时间"
+              prop="duedate"
+              width="80"
+              align="center"
+            />
+          </el-table-column>
+          <el-table-column label="突发变化点" align="center">
+            <el-table-column
+              label="变化数量"
+              prop="unexceptednum"
+              width="80"
+              align="center"
+            />
+            <el-table-column
+              label="变化点内容"
+              prop="unexcepteditem"
+              width="80"
+              align="center"
             />
           </el-table-column>
           <el-table-column
             label="状态"
-            prop="creatematter"
-            width="80" align="center"
+            prop="status"
+            width="80"
+            align="center"
           />
           <el-table-column
             label="转办人"
-            prop="creatematter"
-            width="80" align="center"
+            prop="transferor"
+            width="80"
+            align="center"
           />
           <el-table-column
             label="被转办人"
-            prop="creatematter"
-            width="80" align="center"
+            prop="transferredperson"
+            width="80"
+            align="center"
           />
-          <el-table-column label="早会总结" prop="summary" width="120" />
         </el-table>
       </el-tab-pane>
-      <el-tab-pane label="机" name="equipment">
+      <el-tab-pane label="机" name="machine">
         <el-table
           v-loading="loading"
-          :data="equipmentList"
+          :data="machineList"
           :span-method="objectSpanMethod"
           border
           @selection-change="handleSelectionChange"
         >
-          <el-table-column type="selection" width="55" align="center" />
-          <el-table-column label="类别" prop="category" width="80" align="center" />
-          <el-table-column label="变化点内容" prop="items" width="80" align="center" />
-          <el-table-column label="确认项目" prop="item" width="80" align="center" />
+          <el-table-column
+            label="类别"
+            prop="category"
+            width="80"
+            align="center"
+          />
+          <el-table-column
+            label="变化点内容"
+            prop="subcategory"
+            width="80"
+            align="center"
+          />
+          <el-table-column
+            label="确认项目"
+            prop="content"
+            width="80"
+            align="center"
+          />
           <el-table-column
             label="未执行到位产生异常"
-            prop="myexception"
-            width="80" align="center"
+            prop="exceptioncontent"
+            width="80"
+            align="center"
           />
-          <el-table-column label="突发变化点"  align="center">
-            <el-table-column label="变化数量" prop="recognizedNum" width="80" align="center" />
+          <el-table-column label="突发变化点" align="center">
             <el-table-column
-              label="变化点内容"
-              prop="recognizedItem"
-              width="80" align="center"
+              label="变化数量"
+              prop="unexceptednum"
+              width="80"
+              align="center"
             />
-            <el-table-column label="责任人" prop="responsible" width="80" align="center" />
-            <el-table-column label="确认结果" prop="result" width="80" align="center" />
-            <el-table-column label="计划确认时间" prop="acktime" width="80" align="center" />
-          </el-table-column>
-          <el-table-column label="突发变化点"  align="center">
-            <el-table-column label="变化数量" prop="unexceptednum" width="80" align="center" />
             <el-table-column
               label="变化点内容"
               prop="unexcepteditem"
-              width="80" align="center"
+              width="80"
+              align="center"
+            />
+            <el-table-column
+              label="责任人"
+              prop="assigneduserid"
+              width="80"
+              align="center"
+            />
+            <el-table-column
+              label="确认结果"
+              prop="result"
+              width="80"
+              align="center"
+            />
+            <el-table-column
+              label="计划确认时间"
+              prop="duedate"
+              width="80"
+              align="center"
             />
           </el-table-column>
-           <el-table-column
+          <el-table-column label="突发变化点" align="center">
+            <el-table-column
+              label="变化数量"
+              prop="unexceptednum"
+              width="80"
+              align="center"
+            />
+            <el-table-column
+              label="变化点内容"
+              prop="unexcepteditem"
+              width="80"
+              align="center"
+            />
+          </el-table-column>
+          <el-table-column
             label="状态"
-            prop="creatematter"
-            width="80" align="center"
+            prop="status"
+            width="80"
+            align="center"
           />
           <el-table-column
             label="转办人"
-            prop="creatematter"
-            width="80" align="center"
+            prop="transferor"
+            width="80"
+            align="center"
           />
           <el-table-column
             label="被转办人"
-            prop="creatematter"
-            width="80" align="center"
+            prop="transferredperson"
+            width="80"
+            align="center"
           />
-          <el-table-column label="早会总结" prop="summary" width="120" />
         </el-table>
       </el-tab-pane>
       <el-tab-pane label="料" name="material">
@@ -201,49 +282,94 @@
           @selection-change="handleSelectionChange"
         >
           <el-table-column type="selection" width="55" align="center" />
-          <el-table-column label="类别" prop="category" width="80" align="center" />
-          <el-table-column label="变化点内容" prop="items" width="80" align="center" />
-          <el-table-column label="确认项目" prop="item" width="80" align="center" />
+          <el-table-column
+            label="类别"
+            prop="category"
+            width="80"
+            align="center"
+          />
+          <el-table-column
+            label="变化点内容"
+            prop="subcategory"
+            width="80"
+            align="center"
+          />
+          <el-table-column
+            label="确认项目"
+            prop="content"
+            width="80"
+            align="center"
+          />
           <el-table-column
             label="未执行到位产生异常"
-            prop="myexception"
-            width="80" align="center"
+            prop="exceptioncontent"
+            width="80"
+            align="center"
           />
-          <el-table-column label="突发变化点"  align="center">
-            <el-table-column label="变化数量" prop="recognizedNum" width="80" align="center" />
+          <el-table-column label="突发变化点" align="center">
             <el-table-column
-              label="变化点内容"
-              prop="recognizedItem"
-              width="80" align="center"
+              label="变化数量"
+              prop="unexceptednum"
+              width="80"
+              align="center"
             />
-            <el-table-column label="责任人" prop="responsible" width="80" align="center" />
-            <el-table-column label="确认结果" prop="result" width="80" align="center" />
-            <el-table-column label="计划确认时间" prop="acktime" width="80" align="center" />
-          </el-table-column>
-          <el-table-column label="突发变化点"  align="center">
-            <el-table-column label="变化数量" prop="unexceptednum" width="80" align="center" />
             <el-table-column
               label="变化点内容"
               prop="unexcepteditem"
-              width="80" align="center"
+              width="80"
+              align="center"
+            />
+            <el-table-column
+              label="责任人"
+              prop="assigneduserid"
+              width="80"
+              align="center"
+            />
+            <el-table-column
+              label="确认结果"
+              prop="result"
+              width="80"
+              align="center"
+            />
+            <el-table-column
+              label="计划确认时间"
+              prop="duedate"
+              width="80"
+              align="center"
             />
           </el-table-column>
-           <el-table-column
+          <el-table-column label="突发变化点" align="center">
+            <el-table-column
+              label="变化数量"
+              prop="unexceptednum"
+              width="80"
+              align="center"
+            />
+            <el-table-column
+              label="变化点内容"
+              prop="unexcepteditem"
+              width="80"
+              align="center"
+            />
+          </el-table-column>
+          <el-table-column
             label="状态"
-            prop="creatematter"
-            width="80" align="center"
+            prop="status"
+            width="80"
+            align="center"
           />
           <el-table-column
             label="转办人"
-            prop="creatematter"
-            width="80" align="center"
+            prop="transferor"
+            width="80"
+            align="center"
           />
           <el-table-column
             label="被转办人"
-            prop="creatematter"
-            width="80" align="center"
+            prop="transferredperson"
+            width="80"
+            align="center"
           />
-          <el-table-column label="早会总结" prop="summary" width="120" />
         </el-table>
       </el-tab-pane>
       <el-tab-pane label="法" name="method">
@@ -255,49 +381,94 @@
           @selection-change="handleSelectionChange"
         >
           <el-table-column type="selection" width="55" align="center" />
-          <el-table-column label="类别" prop="category" width="80" align="center" />
-          <el-table-column label="变化点内容" prop="items" width="80" align="center" />
-          <el-table-column label="确认项目" prop="item" width="80" align="center" />
+          <el-table-column
+            label="类别"
+            prop="category"
+            width="80"
+            align="center"
+          />
+          <el-table-column
+            label="变化点内容"
+            prop="subcategory"
+            width="80"
+            align="center"
+          />
+          <el-table-column
+            label="确认项目"
+            prop="content"
+            width="80"
+            align="center"
+          />
           <el-table-column
             label="未执行到位产生异常"
-            prop="myexception"
-            width="80" align="center"
+            prop="exceptioncontent"
+            width="80"
+            align="center"
           />
-          <el-table-column label="突发变化点"  align="center">
-            <el-table-column label="变化数量" prop="recognizedNum" width="80" align="center" />
+          <el-table-column label="突发变化点" align="center">
             <el-table-column
-              label="变化点内容"
-              prop="recognizedItem"
-              width="80" align="center"
+              label="变化数量"
+              prop="unexceptednum"
+              width="80"
+              align="center"
             />
-            <el-table-column label="责任人" prop="responsible" width="80" align="center" />
-            <el-table-column label="确认结果" prop="result" width="80" align="center" />
-            <el-table-column label="计划确认时间" prop="acktime" width="80" align="center" />
-          </el-table-column>
-          <el-table-column label="突发变化点"  align="center">
-            <el-table-column label="变化数量" prop="unexceptednum" width="80" align="center" />
             <el-table-column
               label="变化点内容"
               prop="unexcepteditem"
-              width="80" align="center"
+              width="80"
+              align="center"
+            />
+            <el-table-column
+              label="责任人"
+              prop="assigneduserid"
+              width="80"
+              align="center"
+            />
+            <el-table-column
+              label="确认结果"
+              prop="result"
+              width="80"
+              align="center"
+            />
+            <el-table-column
+              label="计划确认时间"
+              prop="duedate"
+              width="80"
+              align="center"
             />
           </el-table-column>
-           <el-table-column
+          <el-table-column label="突发变化点" align="center">
+            <el-table-column
+              label="变化数量"
+              prop="unexceptednum"
+              width="80"
+              align="center"
+            />
+            <el-table-column
+              label="变化点内容"
+              prop="unexcepteditem"
+              width="80"
+              align="center"
+            />
+          </el-table-column>
+          <el-table-column
             label="状态"
-            prop="creatematter"
-            width="80" align="center"
+            prop="status"
+            width="80"
+            align="center"
           />
           <el-table-column
             label="转办人"
-            prop="creatematter"
-            width="80" align="center"
+            prop="transferor"
+            width="80"
+            align="center"
           />
           <el-table-column
             label="被转办人"
-            prop="creatematter"
-            width="80" align="center"
+            prop="transferredperson"
+            width="80"
+            align="center"
           />
-          <el-table-column label="早会总结" prop="summary" width="120" />
         </el-table>
       </el-tab-pane>
       <el-tab-pane label="环" name="enviroment">
@@ -309,49 +480,193 @@
           @selection-change="handleSelectionChange"
         >
           <el-table-column type="selection" width="55" align="center" />
-          <el-table-column label="类别" prop="category" width="80" align="center" />
-          <el-table-column label="变化点内容" prop="items" width="80" align="center" />
-          <el-table-column label="确认项目" prop="item" width="80" align="center" />
+          <el-table-column
+            label="类别"
+            prop="category"
+            width="80"
+            align="center"
+          />
+          <el-table-column
+            label="变化点内容"
+            prop="subcategory"
+            width="80"
+            align="center"
+          />
+          <el-table-column
+            label="确认项目"
+            prop="content"
+            width="80"
+            align="center"
+          />
           <el-table-column
             label="未执行到位产生异常"
-            prop="myexception"
-            width="80" align="center"
+            prop="exceptioncontent"
+            width="80"
+            align="center"
           />
-          <el-table-column label="突发变化点"  align="center">
-            <el-table-column label="变化数量" prop="recognizedNum" width="80" align="center" />
+          <el-table-column label="突发变化点" align="center">
             <el-table-column
-              label="变化点内容"
-              prop="recognizedItem"
-              width="80" align="center"
+              label="变化数量"
+              prop="unexceptednum"
+              width="80"
+              align="center"
             />
-            <el-table-column label="责任人" prop="responsible" width="80" align="center" />
-            <el-table-column label="确认结果" prop="result" width="80" align="center" />
-            <el-table-column label="计划确认时间" prop="acktime" width="80" align="center" />
-          </el-table-column>
-          <el-table-column label="突发变化点"  align="center">
-            <el-table-column label="变化数量" prop="unexceptednum" width="80" align="center" />
             <el-table-column
               label="变化点内容"
               prop="unexcepteditem"
-              width="80" align="center"
+              width="80"
+              align="center"
+            />
+            <el-table-column
+              label="责任人"
+              prop="assigneduserid"
+              width="80"
+              align="center"
+            />
+            <el-table-column
+              label="确认结果"
+              prop="result"
+              width="80"
+              align="center"
+            />
+            <el-table-column
+              label="计划确认时间"
+              prop="duedate"
+              width="80"
+              align="center"
             />
           </el-table-column>
-           <el-table-column
+          <el-table-column label="突发变化点" align="center">
+            <el-table-column
+              label="变化数量"
+              prop="unexceptednum"
+              width="80"
+              align="center"
+            />
+            <el-table-column
+              label="变化点内容"
+              prop="unexcepteditem"
+              width="80"
+              align="center"
+            />
+          </el-table-column>
+          <el-table-column
             label="状态"
-            prop="creatematter"
-            width="80" align="center"
+            prop="status"
+            width="80"
+            align="center"
           />
           <el-table-column
             label="转办人"
-            prop="creatematter"
-            width="80" align="center"
+            prop="transferor"
+            width="80"
+            align="center"
           />
           <el-table-column
             label="被转办人"
-            prop="creatematter"
-            width="80" align="center"
+            prop="transferredperson"
+            width="80"
+            align="center"
           />
-          <el-table-column label="早会总结" prop="summary" width="120" />
+        </el-table>
+      </el-tab-pane>
+      <el-tab-pane label="测" name="measure">
+        <el-table
+          v-loading="loading"
+          :data="measureList"
+          :span-method="objectSpanMethod"
+          border
+          @selection-change="handleSelectionChange"
+        >
+          <el-table-column type="selection" width="55" align="center" />
+          <el-table-column
+            label="类别"
+            prop="category"
+            width="80"
+            align="center"
+          />
+          <el-table-column
+            label="变化点内容"
+            prop="subcategory"
+            width="80"
+            align="center"
+          />
+          <el-table-column
+            label="确认项目"
+            prop="content"
+            width="80"
+            align="center"
+          />
+          <el-table-column
+            label="未执行到位产生异常"
+            prop="exceptioncontent"
+            width="80"
+            align="center"
+          />
+          <el-table-column label="突发变化点" align="center">
+            <el-table-column
+              label="变化数量"
+              prop="unexceptednum"
+              width="80"
+              align="center"
+            />
+            <el-table-column
+              label="变化点内容"
+              prop="unexcepteditem"
+              width="80"
+              align="center"
+            />
+            <el-table-column
+              label="责任人"
+              prop="assigneduserid"
+              width="80"
+              align="center"
+            />
+            <el-table-column
+              label="确认结果"
+              prop="result"
+              width="80"
+              align="center"
+            />
+            <el-table-column
+              label="计划确认时间"
+              prop="duedate"
+              width="80"
+              align="center"
+            />
+          </el-table-column>
+          <el-table-column label="突发变化点" align="center">
+            <el-table-column
+              label="变化数量"
+              prop="unexceptednum"
+              width="80"
+              align="center"
+            />
+            <el-table-column
+              label="变化点内容"
+              prop="unexcepteditem"
+              width="80"
+              align="center"
+            />
+          </el-table-column>
+          <el-table-column
+            label="状态"
+            prop="status"
+            width="80"
+            align="center"
+          />
+          <el-table-column
+            label="转办人"
+            prop="transferor"
+            width="80"
+            align="center"
+          />
+          <el-table-column
+            label="被转办人"
+            prop="transferredperson"
+            width="80"
+            align="center"
+          />
         </el-table>
       </el-tab-pane>
     </el-tabs>
@@ -438,13 +753,13 @@ import {
   getTemplateAll,
   exportTemplate,
   updateTemplate,
-  importTemplate,
-} from "@/api/manage/template";
+  listAssignMent,
+} from "@/api/manage/assign";
 
 export default {
   data() {
     return {
-      showSearch:true,
+      showSearch: true,
       activeName: "person",
       currentgroup: "person",
       OrderIndexObj: {},
@@ -462,28 +777,18 @@ export default {
       itemArr: [],
       myexceptionArr: [],
       templist: [],
-      personList: [],
-      equipmentList: [],
+      manList: [],
+      machineList: [],
       materialList: [],
       methodList: [],
       enviromentList: [],
+      measureList: [],
+      areas: [],
+      shiftslist: [],
       queryParams: {
-        pageNum: 1,
-        pageSize: 10,
-        mygrouping: null,
-        category: null,
-        items: null,
-        item: null,
-        myexception: null,
-        recognizednum: null,
-        recognizeditem: null,
-        responsible: null,
-        result: null,
-        acktime: null,
-        unexceptednum: null,
-        unexcepteditem: null,
-        creatematter: null,
-        summary: null,
+        area: "",
+        date: "",
+        shifts: "",
       },
       // upload: {
       //   open: false,
@@ -504,32 +809,37 @@ export default {
         item: "",
         myexception: "",
       },
-      templateList: [],
+      assignList: [],
       loading: true,
     };
   },
   created() {
-    this.getList();
+    this.getDicts("mng_common_areas").then((response) => {
+      this.areas = response.data;
+    });
+    this.getDicts("mng_common_shifts").then((response) => {
+      this.shiftslist = response.data;
+    });
   },
-  // mounted() {
-  //   this.getOrderNumber();
-  // },
   watch: {
-    templateList: function (val) {
-      this.personList = this.templateList.filter(
-        (n) => n.mygrouping == "person"
+    assignList: function (val) {
+      this.manList = this.assignList.filter(
+        (n) => n.categorygroup == "man"
       );
-      this.equipmentList = this.templateList.filter(
-        (n) => n.mygrouping == "equipment"
+      this.machineList = this.assignList.filter(
+        (n) => n.categorygroup == "machine"
       );
-      this.materialList = this.templateList.filter(
-        (n) => n.mygrouping == "material"
+      this.materialList = this.assignList.filter(
+        (n) => n.categorygroup == "material"
       );
-      this.methodList = this.templateList.filter(
-        (n) => n.mygrouping == "method"
+      this.methodList = this.assignList.filter(
+        (n) => n.categorygroup == "method"
       );
-      this.environmentList = this.templateList.filter(
-        (n) => n.mygrouping == "environment"
+      this.environmentList = this.assignList.filter(
+        (n) => n.categorygroup == "environment"
+      );
+      this.measureList = this.assignList.filter(
+        (n) => n.categorygroup == "measure"
       );
     },
   },
@@ -538,16 +848,18 @@ export default {
       this.OrderIndexObj = {};
       let OrderObj = {};
       this.templist =
-        this.currentgroup == "person"
-          ? this.personList
-          : this.currentgroup == "equipment"
-          ? this.equipmentList
+        this.currentgroup == "man"
+          ? this.manList
+          : this.currentgroup == "machine"
+          ? this.machineList
           : this.currentgroup == "material"
           ? this.materialList
           : this.currentgroup == "method"
           ? this.methodList
           : this.currentgroup == "environment"
           ? this.environmentList
+          : this.currentgroup == "measure"
+          ? this.measureList
           : null;
       this.templist.forEach((element, index) => {
         element.rowIndex = index;
@@ -583,19 +895,19 @@ export default {
           };
         }
       }
-      if (columnIndex == 15) {
-        if (rowIndex == 0) {
-          return {
-            rowspan: this.templist.length,
-            colspan: 1,
-          };
-        } else {
-          return {
-            rowspan: 0,
-            colspan: 0,
-          };
-        }
-      }
+      // if (columnIndex == 15) {
+      //   if (rowIndex == 0) {
+      //     return {
+      //       rowspan: this.templist.length,
+      //       colspan: 1,
+      //     };
+      //   } else {
+      //     return {
+      //       rowspan: 0,
+      //       colspan: 0,
+      //     };
+      //   }
+      // }
     },
 
     // tableRowClassName({ row, rowIndex }) {
@@ -621,10 +933,13 @@ export default {
     //   this.rowIndex = "-1";
     //   this.hoverOrderArr = [];
     // },
+    handleQuery() {
+      this.getList();
+    },
     getList() {
       this.loading = true;
-      getTemplateAll().then((Response) => {
-        this.templateList = Response;
+      listAssignMent().then((Response) => {
+        this.assignList = Response;
         this.loading = false;
       });
       this.getOrderNumber();

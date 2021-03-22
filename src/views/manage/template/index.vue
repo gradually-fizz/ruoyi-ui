@@ -56,18 +56,6 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['system:role:edit']"
-          >新增</el-button
-        >
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
           type="info"
           plain
           icon="el-icon-upload2"
@@ -253,7 +241,7 @@
       </div>
     </el-dialog>
 
-    <!-- 用户导入对话框
+    <!-- 用户导入对话框-->
     <el-dialog :title="upload.title" :visible.sync="upload.open" width="400px">
       <el-upload
         ref="upload"
@@ -288,7 +276,7 @@
         <el-button type="primary" @click="submitFileForm">确 定</el-button>
         <el-button @click="upload.open = false">取 消</el-button>
       </div>
-    </el-dialog> -->
+    </el-dialog> 
   </div>
 </template>
 <script>
@@ -297,9 +285,11 @@ import {
   exportTemplate,
   updateTemplate,
   importTemplate,
+  listTemplate,
 } from "@/api/manage/template";
 import { listAreaID } from "@/api/manage/common";
 import grouptemplate from "./components/grouptemplate.vue";
+import { getToken } from "@/utils/auth";
 
 export default {
   components: { grouptemplate },
@@ -317,7 +307,10 @@ export default {
       multiple: true,
       // 弹出层标题
       title: "",
-      areas:[],
+      areas:[{
+        dictValue:"cut",
+        dictLabel:"切割",
+      }],
       list: [],
       categoryArr: [],
       subcategoryArr: [],
@@ -330,22 +323,23 @@ export default {
       methodList: [],
       enviromentList: [],
       queryParams: {
-        pageNum: 1,
-        pageSize: 10,
-        areaid:'',
+        areaid:'cut',
       },
-      // upload: {
-      //   open: false,
-      //   title: "",
-      //   // 是否禁用上传
-      //   isUploading: false,
-      //   // 是否更新已经存在的用户数据
-      //   updateSupport: 0,
-      //   // 设置上传的请求头部
-      //   headers: { Authorization: "Bearer " + getToken() },
-      //   // 上传的地址
-      //   url: process.env.VUE_APP_BASE_API + "/system/user/importData",
-      // },
+      // 用户导入参数
+      upload: {
+        // 是否显示弹出层（用户导入）
+        open: false,
+        // 弹出层标题（用户导入）
+        title: "",
+        // 是否禁用上传
+        isUploading: false,
+        // 是否更新已经存在的用户数据
+        updateSupport: 0,
+        // 设置上传的请求头部
+        headers: { Authorization: "Bearer " + getToken() },
+        // 上传的地址
+        url: process.env.VUE_APP_BASE_API + "/manage/template/importData"
+      },
       form: {
         categorygroup: "",
         category: "",
@@ -388,6 +382,14 @@ export default {
     },
   },
   methods: {
+     /** 搜索按钮操作 */
+    handleQuery() {
+      this.getList();
+    },
+    /** 重置按钮操作 */
+    resetQuery() {
+      this.queryParams.areaid = ''
+    },
     getOrderNumber() {
       this.OrderIndexObj = {};
       let OrderObj = {};
@@ -468,56 +470,10 @@ export default {
     getList() {
       this.loading = true;
       listTemplate(this.queryParams).then(response => {
+        console.log(response);
         this.templateList = response.rows;
-        this.total = response.total;
         this.loading = false;
       });
-      // this.templateList = [
-      //   {
-      //     categorygroup:"man",
-      //     category:"1",
-      //     subcategory:"2",
-      //     content:"3",
-      //     exceptioncontent:"4",
-      //   },{
-      //     categorygroup:"man",
-      //     category:"1",
-      //     subcategory:"2",
-      //     content:"3",
-      //     exceptioncontent:"4",
-      //   },{
-      //     categorygroup:"man",
-      //     category:"2",
-      //     subcategory:"2",
-      //     content:"3",
-      //     exceptioncontent:"4",
-      //   },{
-      //     categorygroup:"machine",
-      //     category:"2",
-      //     subcategory:"2",
-      //     content:"3",
-      //     exceptioncontent:"4",
-      //   },{
-      //     categorygroup:"machine",
-      //     category:"2",
-      //     subcategory:"2",
-      //     content:"3",
-      //     exceptioncontent:"4",
-      //   },{
-      //     categorygroup:"machine",
-      //     category:"2",
-      //     subcategory:"2",
-      //     content:"3",
-      //     exceptioncontent:"4",
-      //   },{
-      //     categorygroup:"machine",
-      //     category:"3",
-      //     subcategory:"2",
-      //     content:"3",
-      //     exceptioncontent:"4",
-      //   }
-      // ],
-      // this.loading = false;
       this.getOrderNumber();
     },
     handleClick(tab, event) {
@@ -576,33 +532,33 @@ export default {
       this.single = selection.length != 1;
       this.multiple = !selection.length;
     },
-    // /** 导入按钮操作 */
-    // handleImport() {
-    //   this.upload.title = "用户导入";
-    //   this.upload.open = true;
-    // },
-    // /** 下载模板操作 */
-    // importTemplate() {
-    //   importTemplate().then((response) => {
-    //     this.download(response.msg);
-    //   });
-    // },
-    // // 文件上传中处理
-    // handleFileUploadProgress(event, file, fileList) {
-    //   this.upload.isUploading = true;
-    // },
-    // // 文件上传成功处理
-    // handleFileSuccess(response, file, fileList) {
-    //   this.upload.open = false;
-    //   this.upload.isUploading = false;
-    //   this.$refs.upload.clearFiles();
-    //   this.$alert(response.msg, "导入结果", { dangerouslyUseHTMLString: true });
-    //   this.getList();
-    // },
-    // // 提交上传文件
-    // submitFileForm() {
-    //   this.$refs.upload.submit();
-    // },
+    /** 导入按钮操作 */
+    handleImport() {
+      this.upload.title = "用户导入";
+      this.upload.open = true;
+    },
+    /** 下载模板操作 */
+    importTemplate() {
+      importTemplate().then((response) => {
+        this.download(response.msg);
+      });
+    },
+    // 文件上传中处理
+    handleFileUploadProgress(event, file, fileList) {
+      this.upload.isUploading = true;
+    },
+    // 文件上传成功处理
+    handleFileSuccess(response, file, fileList) {
+      this.upload.open = false;
+      this.upload.isUploading = false;
+      this.$refs.upload.clearFiles();
+      this.$alert(response.msg, "导入结果", { dangerouslyUseHTMLString: true });
+      this.getList();
+    },
+    // 提交上传文件
+    submitFileForm() {
+      this.$refs.upload.submit();
+    },
   },
 };
 </script>

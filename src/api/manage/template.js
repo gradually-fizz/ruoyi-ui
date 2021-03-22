@@ -62,7 +62,7 @@ export function exportTemplate(query) {
 // 下载用户导入模板
 export function importTemplate() {
   return request({
-    url: '/system/template/importTemplate',
+    url: '/manage/template/importTemplate',
     method: 'get'
   })
 }
