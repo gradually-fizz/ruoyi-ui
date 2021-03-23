@@ -1,11 +1,11 @@
 import request from '@/utils/request'
+import { praseStrEmpty } from "@/utils/ruoyi";
 
 // 查询变化点模板列表
 export function listTemplate(query) {
   return request({
-    url: '/manage/template/list',
+    url: 'business/template/list/'+ query,
     method: 'get',
-    params: query
   })
 }
 // 查询变化点模板列表

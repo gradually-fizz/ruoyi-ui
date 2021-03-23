@@ -17,9 +17,9 @@
             >
               <el-option
                 v-for="dict in areas"
-                :key="dict.dictValue"
+                :key="dict.dictCode"
                 :label="dict.dictLabel"
-                :value="dict.dictValue"
+                :value="dict.dictCode"
               />
             </el-select>
           </el-form-item>
@@ -161,10 +161,10 @@
         </el-table>
       </el-tab-pane>
       <el-tab-pane label="环" name="enviroment">
-        <!-- <grouptemplate :list="enviromentList" :objectSpanMethod="objectSpanMethod"/> -->
+        <!-- <grouptemplate :list="environmentList" :objectSpanMethod="objectSpanMethod"/> -->
         <el-table
           v-loading="loading"
-          :data="enviromentList"
+          :data="environmentList"
           :span-method="objectSpanMethod"
           border
           @selection-change="handleSelectionChange"
@@ -308,7 +308,7 @@ export default {
       // 弹出层标题
       title: "",
       areas:[{
-        dictValue:"cut",
+        dictCode:"106",
         dictLabel:"切割",
       }],
       list: [],
@@ -321,9 +321,10 @@ export default {
       machineList: [],
       materialList: [],
       methodList: [],
-      enviromentList: [],
+      environmentList: [],
+      measureList:[],
       queryParams: {
-        areaid:'cut',
+        areaid:106,
       },
       // 用户导入参数
       upload: {
@@ -341,6 +342,7 @@ export default {
         url: process.env.VUE_APP_BASE_API + "/manage/template/importData"
       },
       form: {
+        templateitemsid:"",
         categorygroup: "",
         category: "",
         subcategory: "",
@@ -352,10 +354,11 @@ export default {
     };
   },
   created() {
-    this.getList();
     this.getDicts("mng_common_areas").then(response => {
       this.areas = response.data;
     });
+    this.queryParams.areaid = this.areas[0].dictCode;
+    this.getList();
   },
   mounted() {
   },
@@ -469,9 +472,9 @@ export default {
     // },
     getList() {
       this.loading = true;
-      listTemplate(this.queryParams).then(response => {
+      listTemplate(this.queryParams.areaid).then(response => {
         console.log(response);
-        this.templateList = response.rows;
+        this.templateList = response.templatelist;
         this.loading = false;
       });
       this.getOrderNumber();
@@ -511,6 +514,7 @@ export default {
     submitForm: function () {
       this.$refs["form"].validate((valid) => {
         if (valid) {
+
           updateTemplate(this.form).then((response) => {
             this.msgSuccess("修改成功");
             this.open = false;
@@ -525,6 +529,7 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
+      this.form.templateitemsid = selection.map(item=>item.templateitemsid);
       this.categoryArr = selection.map((item) => item.category);
       this.subcategoryArr = selection.map((item) => item.subcategory);
       this.contentArr = selection.map((item) => item.content);

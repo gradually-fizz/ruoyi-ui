@@ -16,9 +16,9 @@
         >
           <el-option
             v-for="dict in areas"
-            :key="dict.dictValue"
+            :key="dict.dictCode"
             :label="dict.dictLabel"
-            :value="dict.dictValue"
+            :value="dict.dictCode"
           />
         </el-select>
       </el-form-item>
@@ -36,9 +36,9 @@
         >
           <el-option
             v-for="dict in shiftslist"
-            :key="dict.dictValue"
+            :key="dict.dictCode"
             :label="dict.dictLabel"
-            :value="dict.dictValue"
+            :value="dict.dictCode"
           />
         </el-select>
       </el-form-item>
@@ -68,7 +68,7 @@
           plain
           icon="el-icon-s-opportunity"
           size="mini"
-          @click="handleUpdate"
+          @click="handleSave"
           v-hasPermi="['system:role:edit']"
           >保存</el-button
         >
@@ -137,20 +137,6 @@
             <el-table-column
               label="计划确认时间"
               prop="duedate"
-              width="80"
-              align="center"
-            />
-          </el-table-column>
-          <el-table-column label="突发变化点" align="center">
-            <el-table-column
-              label="变化数量"
-              prop="unexceptednum"
-              width="80"
-              align="center"
-            />
-            <el-table-column
-              label="变化点内容"
-              prop="unexcepteditem"
               width="80"
               align="center"
             />
@@ -763,6 +749,8 @@ export default {
       activeName: "person",
       currentgroup: "person",
       OrderIndexObj: {},
+      templateitemsid:'',
+      orderId:'',
       flag: false,
       open: false,
       // 非单个禁用
@@ -844,6 +832,13 @@ export default {
     },
   },
   methods: {
+    handleSave(){
+      // const assignObject = {},
+
+      // if(this.templateid == null || this.templist == ""){
+
+      // }
+    },
     getOrderNumber() {
       this.OrderIndexObj = {};
       let OrderObj = {};
@@ -938,8 +933,10 @@ export default {
     },
     getList() {
       this.loading = true;
-      listAssignMent().then((Response) => {
-        this.assignList = Response;
+      listAssignMent().then((response) => {
+        this.assignList = response.data.tasklist;
+        this.templateitemsid =  response.data.templateitemsid;
+        this.orderId = response.data.orderId;
         this.loading = false;
       });
       this.getOrderNumber();
