@@ -7,3 +7,12 @@ export function listAreaID() {
     method: 'get'
   })
 }
+
+// 获取userid
+export function listUserID(query) {
+  return request({
+    url: '/common/userid/list',
+    method: 'get',
+    params:query
+  })
+}
