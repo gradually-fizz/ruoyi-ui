@@ -743,11 +743,10 @@
       width="600px"
       append-to-body
     >
-      <el-form>
+      <el-form :inline="true" >
         <el-form-item label="用户工号" prop="userId">
           <el-input
             v-model="queryParams1.userId"
-            placeholder="请输入用户工号"
             clearable
             size="small"
             style="width: 100px"
@@ -757,7 +756,6 @@
         <el-form-item label="用户姓名" prop="userName">
           <el-input
             v-model="queryParams1.userName"
-            placeholder="请输入用户姓名"
             clearable
             size="small"
             style="width: 100px"
@@ -777,6 +775,7 @@
           >
         </el-form-item>
       </el-form>
+      <el-card header="检索结果">
       <el-table
         ref="singleTable"
         :data="userList"
@@ -784,11 +783,26 @@
         @current-change="handleCurrentChange"
         style="width: 100%"
       >
-        <el-table-column property="userId" label="工号" width="120">
+        <el-table-column property="userId" label="工号" >
         </el-table-column>
-        <el-table-column property="userName" label="姓名" width="120">
+        <el-table-column property="userName" label="姓名">
         </el-table-column>
       </el-table>
+      </el-card>
+      <el-card header="常用联系人">
+      <el-table
+        ref="commonUserTable"
+        :data="commonUserList"
+        highlight-current-row
+        @current-change="handleCurrentChange"
+        style="width: 100%"
+      >
+        <el-table-column property="userId" label="工号" >
+        </el-table-column>
+        <el-table-column property="userName" label="姓名" >
+        </el-table-column>
+      </el-table>
+      </el-card>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm1">确 定</el-button>
         <el-button @click="cancel1">取 消</el-button>
@@ -930,7 +944,9 @@ export default {
       if(commonUserList == null || commonUserList == '')
         commonUserList=[];
       commonUserList.unshift(commonUser);
-      // this.commonUserList = commonUserList;
+      if(commonUserList.length > 5)
+        commonUserList.slice(0,5);
+      this.commonUserList = commonUserList;
       localStorage.setItem("commonUser",JSON.stringify(commonUserList))
       assignTask(assignObject).then(
         this.$message("分派成功！")

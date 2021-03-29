@@ -8,7 +8,6 @@
         <el-table
           v-loading="loading"
           :data="list"
-          :span-method="objectSpanMethod"
           border
         >
         
@@ -118,7 +117,7 @@
           :total="total"
           :page.sync="queryParams.pageNum"
           :limit.sync="queryParams.pageSize"
-          @pagination="$emit('getList','lalala')"
+          @pagination="$emit('getList',queryParams.pageNum,'lalala')"
         />
       </div>
     </el-card>
@@ -137,9 +136,9 @@ export default {
     return {};
   },
   methods:{
-    getList(){
-      console.log("jdakfh");
-    }
+    // getList(){
+    //   console.log("jdakfh");
+    // }
   }
 };
 </script>

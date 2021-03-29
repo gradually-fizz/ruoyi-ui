@@ -115,8 +115,25 @@ export default {
   },
   created: {},
   methods: {
-    getList(value){
+    getList(value,value2){
       console.log(value);
+      console.log(value2);
+      this.queryParams.pageNum = value;
+      this.curlist = [
+        {
+          category: "casc",
+          items: "is",
+          item: "i",
+        },{
+          category: "cac",
+          items: "is",
+          item: "i",
+        },{
+          category: "casc",
+          items: "is",
+          item: "i",
+        }
+      ]
     }
   },
   watch: {
