@@ -65,9 +65,13 @@
           <el-table-column
             label="确认结果"
             prop="result"
-            width="80"
+            width="120"
             align="center"
-          />
+          >
+            <template slot-scope="scope">
+              <el-input  v-model="scope.row.result" type="textarea">{{scope.row.result}}</el-input>
+            </template>
+          </el-table-column>
           <el-table-column
             label="计划确认时间"
             prop="duedate"
@@ -86,7 +90,12 @@
             width="80"
             align="center"
           />
-         
+         <el-table-column
+            label="被转办人"
+            prop="transferredperson"
+            width="80"
+            align="center"
+          />
           <el-table-column
             label="操作"
             align="center"
@@ -98,7 +107,7 @@
                 size="mini"
                 type="text"
                 icon="el-icon-edit"
-                @click="handleUpdate(scope.row)"
+                @click="$emit('handleSubmit',scope.row)"
                 v-hasPermi="['system:user:edit']"
               >提交</el-button>
               <el-button
@@ -106,7 +115,7 @@
                 size="mini"
                 type="text"
                 icon="el-icon-delete"
-                @click="handleDelete(scope.row)"
+                @click="$emit('handleTransfer',scope.row)"
                 v-hasPermi="['system:user:remove']"
               >转办</el-button>              
             </template>
@@ -117,7 +126,7 @@
           :total="total"
           :page.sync="queryParams.pageNum"
           :limit.sync="queryParams.pageSize"
-          @pagination="$emit('getList',queryParams.pageNum,'lalala')"
+          @pagination="$emit('getCurList',queryParams.pageNum,queryParams.pageSize)"
         />
       </div>
     </el-card>

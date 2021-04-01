@@ -11,7 +11,7 @@ export function listTemplate(query) {
 // 查询变化点模板列表
 export function getTemplateAll() {
   return request({
-    url: '/manage/template/all',
+    url: '/business/template/all',
     method: 'get'
   })
 }
@@ -19,7 +19,7 @@ export function getTemplateAll() {
 // 查询变化点模板详细
 export function getTemplate(group) {
   return request({
-    url: '/manage/template/' + group,
+    url: '/business/template/' + group,
     method: 'get'
   })
 }
@@ -27,7 +27,7 @@ export function getTemplate(group) {
 // 新增变化点模板
 export function addTemplate(data) {
   return request({
-    url: '/manage/template',
+    url: '/business/template',
     method: 'post',
     data: data
   })
@@ -36,7 +36,7 @@ export function addTemplate(data) {
 // 修改变化点模板
 export function updateTemplate(data) {
   return request({
-    url: '/manage/template/update',
+    url: '/business/template/edit',
     method: 'put',
     data: data
   })
@@ -45,7 +45,7 @@ export function updateTemplate(data) {
 // 删除变化点模板
 export function delTemplate(group) {
   return request({
-    url: '/manage/template/' + group,
+    url: '/business/template/' + group,
     method: 'delete'
   })
 }
@@ -53,7 +53,7 @@ export function delTemplate(group) {
 // 导出变化点模板
 export function exportTemplate(query) {
   return request({
-    url: '/manage/template/export',
+    url: '/business/template/export',
     method: 'get',
     params: query
   })
@@ -62,7 +62,7 @@ export function exportTemplate(query) {
 // 下载用户导入模板
 export function importTemplate() {
   return request({
-    url: '/manage/template/importTemplate',
+    url: '/business/template/importTemplate',
     method: 'get'
   })
 }

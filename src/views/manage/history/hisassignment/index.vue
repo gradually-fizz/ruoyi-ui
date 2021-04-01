@@ -6,65 +6,74 @@
       v-show="showSearch"
       :inline="true"
     >
-      <el-form-item label="线体" prop="line">
-        <el-input
-          v-model="queryParams.date"
-          placeholder="线体"
-          clearable
-          size="small"
-          style="width: 240px"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="区域" prop="area">
-        <el-input
-          v-model="queryParams.shift"
+      <el-form-item label="区域" prop="areaid">
+        <el-select
+          v-model="queryParams.areaid"
           placeholder="区域"
           clearable
           size="small"
           style="width: 240px"
-          @keyup.enter.native="handleQuery"
-        />
+        >
+          <el-option
+            v-for="dict in areas"
+            :key="dict.dictCode"
+            :label="dict.dictLabel"
+            :value="dict.dictCode"
+          />
+        </el-select>
       </el-form-item>
-      <el-form-item label="班别" prop="area">
-        <el-input
-          v-model="queryParams.shift"
+      <el-form-item label="班别" prop="shiftid">
+        <el-select
+          v-model="queryParams.shiftid"
           placeholder="班别"
           clearable
           size="small"
           style="width: 240px"
-          @keyup.enter.native="handleQuery"
-        />
+        >
+          <el-option
+            v-for="dict in shifts"
+            :key="dict.dictCode"
+            :label="dict.dictLabel"
+            :value="dict.dictCode"
+          />
+        </el-select>
       </el-form-item>
-      <el-form-item label="创建人" prop="area">
+      <el-form-item label="创建人" prop="userid">
         <el-input
-          v-model="queryParams.shift"
+          v-model="queryParams.userid"
           placeholder="创建人"
           clearable
           size="small"
           style="width: 240px"
-          @keyup.enter.native="handleQuery"
-        />
+        >
+          <el-button slot="append" icon="el-icon-search" @click="showUserIdDialog"></el-button>
+        </el-input>
       </el-form-item>
-      <el-form-item label="创建时间" prop="area">
-        <el-input
-          v-model="queryParams.shift"
-          placeholder="创建时间"
-          clearable
-          size="small"
-          style="width: 240px"
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="创建日期" prop="formDate">
+        <el-date-picker
+          v-model="queryParams.formDate"
+          type="date"
+          value-format="yyyy-MM-dd"
+          format="yyyy-MM-dd"
+          placeholder="选择日期"
+        >
+        </el-date-picker>
       </el-form-item>
-      <el-form-item label="状态" prop="area">
-        <el-input
-          v-model="queryParams.shift"
+      <el-form-item label="状态" prop="status">
+        <el-select
+          v-model="queryParams.status"
           placeholder="状态"
           clearable
           size="small"
           style="width: 240px"
-          @keyup.enter.native="handleQuery"
-        />
+        >
+          <el-option
+            v-for="dict in statuses"
+            :key="dict.dictCode"
+            :label="dict.dictLabel"
+            :value="dict.dictCode"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button
@@ -79,7 +88,7 @@
         >
       </el-form-item>
     </el-form>
-<el-row :gutter="10" class="mb8">
+    <el-row :gutter="10" class="mb8">
       <right-toolbar
         :showSearch.sync="showSearch"
         @queryTable="getList"
@@ -98,7 +107,7 @@
         >
       </el-col>
     </el-row>
-<el-row/>
+    <el-row />
     <el-tabs v-model="activeName" @tab-click="handleClick" type="border-card">
       <el-tab-pane label="历史任务" name="person">
         <el-table
@@ -189,7 +198,65 @@
         </el-table>
       </el-tab-pane>
     </el-tabs>
-
+    
+    <!-- 获取人员信息对话框 -->
+    <el-dialog
+      :title="title1"
+      :visible.sync="open1"
+      width="600px"
+      append-to-body
+    >
+      <el-form :inline="true" >
+        <el-form-item label="用户工号" prop="userId">
+          <el-input
+            v-model="queryParams2.userId"
+            clearable
+            size="small"
+            style="width: 100px"
+            @keyup.enter.native="handleQuery2"
+          />
+        </el-form-item>
+        <el-form-item label="用户姓名" prop="userName">
+          <el-input
+            v-model="queryParams2.userName"
+            clearable
+            size="small"
+            style="width: 100px"
+            @keyup.enter.native="handleQuery2"
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-button
+            type="primary"
+            icon="el-icon-search"
+            size="mini"
+            @click="handleQuery2"
+            >搜索</el-button
+          >
+          <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
+            >重置</el-button
+          >
+        </el-form-item>
+      </el-form>
+      <el-card header="检索结果">
+      <el-table
+        ref="singleTable"
+        :data="userList"
+        highlight-current-row
+        @current-change="handleCurrentChange"
+        style="width: 100%"
+      >
+        <el-table-column property="userId" label="工号" >
+        </el-table-column>
+        <el-table-column property="userName" label="姓名">
+        </el-table-column>
+      </el-table>
+      </el-card>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitForm1">确 定</el-button>
+        <el-button @click="cancel1">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -199,27 +266,38 @@ import {
   updateTemplate,
   importTemplate,
 } from "@/api/manage/template";
+import { listUserID } from "@/api/manage/common";
 
 export default {
   data() {
     return {
-      showSearch:true,
+      currentRow:{
+        userId:'',
+        userName:'',
+      },
+      showSearch: true,
       activeName: "person",
       currentgroup: "person",
       OrderIndexObj: {},
       flag: false,
       open: false,
+      open1: false,
       // 非单个禁用
       single: true,
       // 非多个禁用
       multiple: true,
       // 弹出层标题
       title: "",
+      title1: "",
       list: [],
+      areas: [],
+      shifts: [],
+      statuses: [],
       categoryArr: [],
       itemsArr: [],
       itemArr: [],
       myexceptionArr: [],
+      userList:[],
       templist: [],
       personList: [],
       equipmentList: [],
@@ -227,6 +305,13 @@ export default {
       methodList: [],
       enviromentList: [],
       queryParams: {
+        areaid: "",
+        shiftid: "",
+        status: "",
+        formDate: "",
+        userid: "",
+      },
+      queryParams1: {
         pageNum: 1,
         pageSize: 10,
         mygrouping: null,
@@ -244,6 +329,10 @@ export default {
         creatematter: null,
         summary: null,
       },
+      queryParams2:{
+        userId:'',
+        userName:'',
+      },
       form: {
         mygrouping: "",
         category: "",
@@ -256,7 +345,16 @@ export default {
     };
   },
   created() {
-    this.getList();
+    this.getDicts("mng_common_areas").then((response) => {
+      this.areas = response.data;
+    });
+    this.getDicts("mng_common_shifts").then((response) => {
+      this.shifts = response.data;
+    });
+    this.getDicts("mng_job_status").then((response) => {
+      this.statuses = response.data;
+    });
+    //this.getList();
   },
   // mounted() {
   //   this.getOrderNumber();
@@ -281,6 +379,35 @@ export default {
     },
   },
   methods: {
+
+    handleCurrentChange(val){
+      this.currentRow = val;
+    },
+    // 批量获取用户id
+    handleQuery2() {
+      this.getuserid();
+    },
+    showUserIdDialog(){
+      this.open1 = true;
+      this.title1 = '检索用户';
+    },
+    getuserid() {
+      // listUserID(this.form).then((response) => {});
+      this.userList = [{
+        userId:'1',
+        userName:'Tom',
+      },{
+        userId:'2',
+        userName:'Cat',
+      }]
+    },
+    submitForm1: function () {
+      this.open1 = false;
+      this.queryParams.userid = this.currentRow.userId;
+    },
+    cancel1() {
+      this.open1 = false;
+    },
     getOrderNumber() {
       this.OrderIndexObj = {};
       let OrderObj = {};
@@ -409,7 +536,6 @@ export default {
       this.single = selection.length != 1;
       this.multiple = !selection.length;
     },
-    
   },
 };
 </script>

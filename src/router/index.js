@@ -122,7 +122,7 @@ export const constantRoutes = [
 ]
 
 export default new Router({
-  mode: 'hash', // 去掉url中的#
+  mode: 'hash', // history 去掉url中的#   ====== hash
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes
 })

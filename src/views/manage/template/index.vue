@@ -93,7 +93,7 @@
           <el-table-column label="确认项目" prop="content" width="80" />
           <el-table-column
             label="未执行到位产生异常"
-            prop="exceptioncontent"
+            prop="exceptionContent"
             width="80"
           />
         </el-table>
@@ -112,7 +112,7 @@
           <el-table-column label="确认项目" prop="content" width="80" />
           <el-table-column
             label="未执行到位产生异常"
-            prop="exceptioncontent"
+            prop="exceptionContent"
             width="80"
           />
         </el-table>
@@ -135,7 +135,7 @@
           <el-table-column label="确认项目" prop="content" width="80" />
           <el-table-column
             label="未执行到位产生异常"
-            prop="exceptioncontent"
+            prop="exceptionContent"
             width="80"
           />
         </el-table>
@@ -155,7 +155,7 @@
           <el-table-column label="确认项目" prop="content" width="80" />
           <el-table-column
             label="未执行到位产生异常"
-            prop="exceptioncontent"
+            prop="exceptionContent"
             width="80"
           />
         </el-table>
@@ -175,7 +175,7 @@
           <el-table-column label="确认项目" prop="content" width="80" />
           <el-table-column
             label="未执行到位产生异常"
-            prop="exceptioncontent"
+            prop="exceptionContent"
             width="80"
           />
         </el-table>
@@ -195,7 +195,7 @@
           <el-table-column label="确认项目" prop="content" width="80" />
           <el-table-column
             label="未执行到位产生异常"
-            prop="exceptioncontent"
+            prop="exceptionContent"
             width="80"
           />
         </el-table>
@@ -207,8 +207,8 @@
       <el-form ref="form" :model="form" label-width="80px">
         <el-row>
           <el-col :span="12">
-            <el-form-item label="5M1E" prop="categorygroup">
-              <el-input v-model="form.categorygroup" />
+            <el-form-item label="5M1E" prop="enCategoryGroupName">
+              <el-input v-model="form.enCategoryGroupName" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -230,8 +230,8 @@
           </el-form-item>
         </el-row>
         <el-row :span="24">
-          <el-form-item label="未执行到位产生异常" prop="exceptioncontent">
-            <el-input v-model="form.exceptioncontent" type="textarea" />
+          <el-form-item label="未执行到位产生异常" prop="exceptionContent">
+            <el-input v-model="form.exceptionContent" type="textarea" />
           </el-form-item>
         </el-row>
       </el-form>
@@ -312,10 +312,11 @@ export default {
         dictLabel:"切割",
       }],
       list: [],
+      templateitemsIdArr:[],
       categoryArr: [],
       subcategoryArr: [],
       contentArr: [],
-      exceptioncontentArr: [],
+      exceptionContentArr: [],
       templist: [],
       manList: [],
       machineList: [],
@@ -343,13 +344,13 @@ export default {
       },
       form: {
         templateitemsid:"",
-        categorygroup: "",
+        enCategoryGroupName: "",
         category: "",
         subcategory: "",
         content: "",
-        exceptioncontent: "",
+        exceptionContent: "",
       },
-      templateList: [],
+      templateItemList: [],
       loading: true,
     };
   },
@@ -363,24 +364,24 @@ export default {
   mounted() {
   },
   watch: {
-    templateList: function (val) {
-      this.manList = this.templateList.filter(
-        (n) => n.categorygroup == "man"
+    templateItemList: function (val) {
+      this.manList = this.templateItemList.filter(
+        (n) => n.enCategoryGroupName == "man"
       );
-      this.machineList = this.templateList.filter(
-        (n) => n.categorygroup == "machine"
+      this.machineList = this.templateItemList.filter(
+        (n) => n.enCategoryGroupName == "machine"
       );
-      this.materialList = this.templateList.filter(
-        (n) => n.categorygroup == "material"
+      this.materialList = this.templateItemList.filter(
+        (n) => n.enCategoryGroupName == "material"
       );
-      this.methodList = this.templateList.filter(
-        (n) => n.categorygroup == "method"
+      this.methodList = this.templateItemList.filter(
+        (n) => n.enCategoryGroupName == "method"
       );
-      this.environmentList = this.templateList.filter(
-        (n) => n.categorygroup == "environment"
+      this.environmentList = this.templateItemList.filter(
+        (n) => n.enCategoryGroupName == "environment"
       );
-      this.measureList = this.templateList.filter(
-        (n) => n.categorygroup == "measure"
+      this.measureList = this.templateItemList.filter(
+        (n) => n.enCategoryGroupName == "measure"
       );
     },
   },
@@ -473,8 +474,7 @@ export default {
     getList() {
       this.loading = true;
       listTemplate(this.queryParams.areaid).then(response => {
-        console.log(response);
-        this.templateList = response.templatelist;
+        this.templateItemList = response.templateItemList;
         this.loading = false;
       });
       this.getOrderNumber();
@@ -486,11 +486,12 @@ export default {
     /** 修改按钮操作 */
     handleUpdate() {
       this.title = "修改模板";
-      this.form.categorygroup = this.currentgroup;
+      this.form.enCategoryGroupName = this.currentgroup;
+      this.form.templateitemsId = this.templateitemsIdArr[0];
       this.form.category = this.categoryArr[0];
       this.form.subcategory = this.subcategoryArr[0];
       this.form.content = this.contentArr[0];
-      this.form.exceptioncontent = this.exceptioncontentArr[0];
+      this.form.exceptionContent = this.exceptionContentArr[0];
       this.open = true;
     },
 
@@ -529,11 +530,11 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.form.templateitemsid = selection.map(item=>item.templateitemsid);
+      this.templateitemsIdArr = selection.map(item=>item.templateitemsId);
       this.categoryArr = selection.map((item) => item.category);
       this.subcategoryArr = selection.map((item) => item.subcategory);
       this.contentArr = selection.map((item) => item.content);
-      this.exceptioncontentArr = selection.map((item) => item.exceptioncontent);
+      this.exceptionContentArr = selection.map((item) => item.exceptionContent);
       this.single = selection.length != 1;
       this.multiple = !selection.length;
     },

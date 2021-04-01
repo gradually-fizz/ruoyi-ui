@@ -126,6 +126,7 @@ export default {
             Cookies.remove("password");
             Cookies.remove('rememberMe');
           }
+          localStorage.setItem("loginuserid",this.loginForm.username);
           this.$store.dispatch("Login", this.loginForm).then(() => {
             this.$router.push({ path: this.redirect || "/" }).catch(()=>{}); // 切换路由，本质是向history栈中添加一个路由，即在添加一个history记录
           }).catch(() => {

@@ -3,7 +3,7 @@ import request from '@/utils/request'
 // 查询任务分派列表
 export function listAssignment(query) {
   return request({
-    url: '/manage/assign/list',
+    url: '/business/assignForm/list',
     method: 'get',
     params: query
   })
@@ -11,7 +11,7 @@ export function listAssignment(query) {
 // 保存任务分派列表--新增
 export function createAssignmentList(query) {
   return request({
-    url: '/manage/assign/createall',
+    url: '/business/assign/createall',
     method: 'put',
     params: query
   })
@@ -19,7 +19,7 @@ export function createAssignmentList(query) {
 // 保存任务分派列表--更新
 export function updateAssignmentList(query) {
   return request({
-    url: '/manage/assign/updateall',
+    url: '/business/assign/updateall',
     method: 'post',
     params: query
   })
@@ -27,7 +27,7 @@ export function updateAssignmentList(query) {
 // 创建单行任务
 export function createAssignment(query) {
   return request({
-    url: '/manage/assign/create',
+    url: '/business/assign/create',
     method: 'put',
     params: query
   })
@@ -35,7 +35,7 @@ export function createAssignment(query) {
 // 更新单行任务
 export function updateAssignment(query) {
   return request({
-    url: '/manage/assign/update',
+    url: '/business/assign/update',
     method: 'post',
     params: query
   })
@@ -43,7 +43,7 @@ export function updateAssignment(query) {
 // 更新单行任务
 export function assignTask(query) {
   return request({
-    url: '/manage/assign/assign',
+    url: '/business/assign/assign',
     method: 'post',
     params: query
   })

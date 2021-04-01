@@ -94,7 +94,7 @@
           :total="total"
           :page.sync="queryParams.pageNum"
           :limit.sync="queryParams.pageSize"
-          @pagination="getList"
+          @pagination="$emit('getHisList',queryParams.pageNum,queryParams.pageSize)"
         />
       </div>
     </el-card>

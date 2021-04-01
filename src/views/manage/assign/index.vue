@@ -6,9 +6,9 @@
       v-show="showSearch"
       :inline="true"
     >
-      <el-form-item label="区域" prop="areaid">
+      <el-form-item label="区域" prop="areaId">
         <el-select
-          v-model="queryParams.areaid"
+          v-model="queryParams.areaId"
           placeholder="选择区域"
           clearable
           size="small"
@@ -22,17 +22,19 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="日期" prop="date">
+      <el-form-item label="日期" prop="formDate">
         <el-date-picker
-          v-model="queryParams.date"
+          v-model="queryParams.formDate"
           type="date"
+          value-format="yyyy-MM-dd"
+          format="yyyy-MM-dd"
           placeholder="选择日期"
         >
         </el-date-picker>
       </el-form-item>
-      <el-form-item label="班别" prop="shifts">
+      <el-form-item label="班别" prop="shiftId">
         <el-select
-          v-model="queryParams.shifts"
+          v-model="queryParams.shiftId"
           placeholder="选择班别"
           clearable
           size="small"
@@ -818,6 +820,7 @@ import {
   assignTask,
 } from "@/api/manage/assign";
 import { listUserID } from "@/api/manage/common";
+import { listAssignment } from "@/api/manage/assign";
 
 export default {
   data() {
@@ -855,9 +858,9 @@ export default {
       userList:[],
       commonUserList:[],
       queryParams: {
-        area: "",
-        date: "",
-        shifts: "",
+        areaId: "",
+        formDate: '',
+        shiftId: "",
       },
       queryParams1: {
         userId: "",
@@ -1085,34 +1088,36 @@ export default {
     },
     getList() {
       this.loading = true;
-      // listAssignment().then((response) => {
-      //   this.assignList = response.data.tasklist;
-      //   this.templateitemsid =  response.data.templateitemsid;
-      //   this.orderId = response.data.orderId;
-      //   this.loading = false;
-      // });
-      this.assignList = [
-        {
-          taskId: "taskId",
-          categorygroup: "man",
-          category: "1",
-          subcategory: "2",
-          content:
-            "sjdfhaksjdfhkasj\n dlfkjlsadfkjal\ndasflaldkfjls\nafgafgafgafg",
-          exceptioncontent: "4",
-          unexceptednum: "",
-          unexcepteditem: "",
-          assigneduserid: "tom",
-          result: "",
-          duedate: "",
-          status: "",
-          transferor: "",
-          transferredperson: "",
-        },
-      ];
-      this.templateitemsid = "response.data.templateitemsid";
-      this.orderId = "response.data.orderId";
-      this.loading = false;
+      console.log(this.queryParams);
+      listAssignment(this.queryParams).then((response) => {
+        console.log(response);
+        // this.assignList = response.data.tasklist;
+        // this.templateitemsid =  response.data.templateitemsid;
+        // this.orderId = response.data.orderId;
+        // this.loading = false;
+      });
+      // this.assignList = [
+      //   {
+      //     taskId: "taskId",
+      //     categorygroup: "man",
+      //     category: "1",
+      //     subcategory: "2",
+      //     content:
+      //       "sjdfhaksjdfhkasj\n dlfkjlsadfkjal\ndasflaldkfjls\nafgafgafgafg",
+      //     exceptioncontent: "4",
+      //     unexceptednum: "",
+      //     unexcepteditem: "",
+      //     assigneduserid: "tom",
+      //     result: "",
+      //     duedate: "",
+      //     status: "",
+      //     transferor: "",
+      //     transferredperson: "",
+      //   },
+      // ];
+      // this.templateitemsid = "response.data.templateitemsid";
+      // this.orderId = "response.data.orderId";
+      // this.loading = false;
       this.getOrderNumber();
     },
     handleClick(tab, event) {
